@@ -41,8 +41,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 		<property name="panButtonsEnabled" value="false" />
 		<property name="scaleConfiguration">
 			<bean class="org.geomajas.configuration.client.ScaleConfigurationInfo">
-				<!--<property name="maximumScale" value="1:10000" />-->
-				<property name="zoomLevels">
+				<property name="maximumScale" value="1:10000" />
+				<!--<property name="zoomLevels">
 					<list>
 						<value>6.388019798183263E-6</value>
 						<value>1.2776039596366526E-5</value>
@@ -66,15 +66,15 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 						<value>3.3491621239499065</value>
 						<value>6.698324247899813</value>
 					</list>
-				</property>
+				</property>-->
 			</bean>
 		</property>
 		<property name="initialBounds">
 			<bean class="org.geomajas.geometry.Bbox">
-				<property name="x" value="-2915614"/>
-				<property name="y" value="-4324501"/>
-				<property name="width" value="5600000"/>
-				<property name="height" value="21000000"/>
+				<property name="x" value="1715614"/>
+				<property name="y" value="5574501"/>
+				<property name="width" value="56000"/>
+				<property name="height" value="210000"/>
 			</bean>
 		</property>
 		<property name="layers">
@@ -82,8 +82,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 				<!--<ref bean="clientLayerOsm" />-->
  				<!--<ref bean="clientLayerSimplifiedCountriesWms" />-->
  				<!--<ref bean="clientLayerSimplifiedCountriesWfs" />
-				<ref bean="clientLayerCountries" />-->
-				<ref bean="clientLayerCountriesWithFlag" />
+				<ref bean="clientLayerCountries" />
+				<ref bean="clientLayerCountriesWithFlag" />-->
 				<ref bean="clientLayerCities" />
 				<!--<ref bean="clientLayerRailRoads" />-->
 			</list>
