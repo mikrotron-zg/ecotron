@@ -246,7 +246,7 @@
 
 		<plugins>
             <!-- plugins needed to parse properties in cacheLocation.xml -->
-            <plugin>
+<!--             <plugin>
                 <groupId>com.keyboardsamurais.maven</groupId>
                 <artifactId>maven-timestamp-plugin</artifactId>
                 <version>1.0</version>
@@ -261,7 +261,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
