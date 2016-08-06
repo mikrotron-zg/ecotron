@@ -18,13 +18,20 @@ import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import org.geomajas.configuration.LayerInfo;
+import org.geomajas.configuration.client.ClientVectorLayerInfo;
 import org.geomajas.geometry.Coordinate;
+import org.geomajas.geometry.service.WktException;
+import org.geomajas.geometry.service.WktService;
 import org.geomajas.gwt2.client.GeomajasImpl;
 import org.geomajas.gwt2.client.GeomajasServerExtension;
 import org.geomajas.gwt2.client.event.MapInitializationEvent;
 import org.geomajas.gwt2.client.event.MapInitializationHandler;
+import org.geomajas.gwt2.client.gfx.VectorContainer;
 import org.geomajas.gwt2.client.map.MapPresenter;
 import org.geomajas.gwt2.client.map.feature.Feature;
+import org.geomajas.gwt2.client.map.layer.VectorServerLayerImpl;
 import org.geomajas.gwt2.client.map.layer.tile.TileConfiguration;
 import org.geomajas.gwt2.client.widget.MapLayoutPanel;
 import org.geomajas.gwt2.plugin.tilebasedlayer.client.TileBasedLayerClient;
@@ -33,6 +40,7 @@ import org.geomajas.quickstart.gwt2.client.controller.feature.controller.Feature
 import org.geomajas.quickstart.gwt2.client.controller.feature.controller.FeatureMouseOverHandler;
 import org.geomajas.quickstart.gwt2.client.i18n.ApplicationMessages;
 import org.geomajas.quickstart.gwt2.client.resource.ApplicationResource;
+import org.vaadin.gwtgraphics.client.VectorObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,11 +153,41 @@ public class ApplicationLayout extends ResizeComposite {
 		TileConfiguration tileConfig = new TileConfiguration(TILE_DIMENSION, TILE_DIMENSION, tileOrigin, resolutions);
 
 		// Create a new layer with the configurations and add it to the maps:
-		OsmLayer osmLayer = TileBasedLayerClient.getInstance().createOsmLayer("osmCountries", tileConfig, urls);
+		OsmLayer osmLayer = TileBasedLayerClient.getInstance().createOsmLayer("OpenStreetMap", tileConfig, urls);
 		mapPresenter.getLayersModel().addLayer(osmLayer);
 		mapPresenter.getLayersModel().moveLayer(osmLayer, 0);
+		
+		//addDemoLayer();
+		addObject();
 	}
 
+	private void addDemoLayer(){
+		// adds Ecotron layer to map
+		
+		ClientVectorLayerInfo layerInfo = new ClientVectorLayerInfo();
+		layerInfo.setId("Ecotron"); //FIXME not working - layer info definition unknown
+		VectorServerLayerImpl ecoLayer = new VectorServerLayerImpl(mapPresenter.getConfiguration(),
+				layerInfo, mapPresenter.getViewPort(), mapPresenter.getEventBus());
+		mapPresenter.getLayersModel().addLayer(ecoLayer);
+		
+	}
+	
+	private void addObject(){
+		
+		
+		VectorContainer vContainer = mapPresenter.getContainerManager().addWorldContainer();
+		try {
+			VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
+					WktService.toGeometry("POINT (1743500 5679500)"));
+			GeomajasImpl.getInstance().getGfxUtil().applyFill(vObject, "#0066AA", 0.5);
+			GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#004499", 0.9, 2, null);
+			vContainer.add(vObject);
+		} catch (WktException e) {
+			// quiet quit
+		}
+		
+	}
+	
 	/**
 	 * Generate a list of resolutions for the available zoom levels.
 	 */

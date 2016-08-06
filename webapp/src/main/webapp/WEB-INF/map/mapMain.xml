@@ -71,8 +71,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 		</property>
 		<property name="initialBounds">
 			<bean class="org.geomajas.geometry.Bbox">
-				<property name="x" value="1715614"/>
-				<property name="y" value="5574501"/>
+				<property name="x" value="1715500"/>
+				<property name="y" value="5574500"/>
 				<property name="width" value="56000"/>
 				<property name="height" value="210000"/>
 			</bean>
@@ -83,8 +83,8 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
  				<!--<ref bean="clientLayerSimplifiedCountriesWms" />-->
  				<!--<ref bean="clientLayerSimplifiedCountriesWfs" />
 				<ref bean="clientLayerCountries" />
-				<ref bean="clientLayerCountriesWithFlag" />-->
-				<ref bean="clientLayerCities" />
+				<ref bean="clientLayerCountriesWithFlag" />
+				<ref bean="clientLayerCities" />-->
 				<!--<ref bean="clientLayerRailRoads" />-->
 			</list>
 		</property>
