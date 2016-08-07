@@ -158,7 +158,13 @@ public class ApplicationLayout extends ResizeComposite {
 		mapPresenter.getLayersModel().moveLayer(osmLayer, 0);
 		
 		//addDemoLayer();
-		addObject();
+
+		//add objects to Map
+		//Mikrotron
+		addObject(getVectorObject(new Coordinate(15.928245, 45.789566), "Mikrotron d.o.o."));		
+		//VETA
+		addObject(getVectorObject(new Coordinate(15.537470, 45.460168), "VETA d.o.o."));
+
 	}
 
 	private void addDemoLayer(){
@@ -172,20 +178,56 @@ public class ApplicationLayout extends ResizeComposite {
 		
 	}
 	
-	private void addObject(){
+	private VectorObject getVectorObject(Coordinate coordinate, String Title){
 		
-		
-		VectorContainer vContainer = mapPresenter.getContainerManager().addWorldContainer();
 		try {
 			VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
-					WktService.toGeometry("POINT (1743500 5679500)"));
-			GeomajasImpl.getInstance().getGfxUtil().applyFill(vObject, "#0066AA", 0.5);
-			GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#004499", 0.9, 2, null);
-			vContainer.add(vObject);
+					WktService.toGeometry(coordinatePointToString(coordinate)));
+			vObject.setTitle(Title);
+			return vObject;
 		} catch (WktException e) {
-			// quiet quit
+			return null;
 		}
 		
+	}
+	
+	private void addObject(VectorObject vObject){
+
+		VectorContainer vContainer = mapPresenter.getContainerManager().addWorldContainer();
+		GeomajasImpl.getInstance().getGfxUtil().applyFill(vObject, "#FF0000", 0.8);
+		GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#C00000", 1.0, 2, null);
+		vContainer.add(vObject);
+
+	}
+	
+	private String coordinatePointToString(Coordinate point){
+		point = toProjection(point);
+		return "POINT (" + point.getX() + " " + point.getY() + ")";
+	}
+	
+	private Coordinate toProjection(Coordinate point){
+
+//	    CHECKME Can't use this code on client side
+//		try {
+//			GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+//			CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
+//			CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857");
+//			MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, false);
+//			Point temp = (Point) JTS.transform(geometryFactory.createPoint(new com.vividsolutions.jts.geom.Coordinate(
+//					point.getX(), point.getY())), transform);
+//			return new Coordinate(temp.getX(), temp.getY());
+//		} catch (NoSuchAuthorityCodeException e) {
+//			//quiet quit
+//		} catch (FactoryException e) {
+//			//quiet quit
+//		} catch (TransformException e) {
+//			//quiet quit
+//		}
+
+		double x = point.getX() * 20037508.34 / 180;
+		double y = Math.log(Math.tan((90 + point.getY()) * Math.PI / 360)) / (Math.PI / 180);
+		y *= 20037508.34 / 180;
+		return new Coordinate(x, y);
 	}
 	
 	/**
