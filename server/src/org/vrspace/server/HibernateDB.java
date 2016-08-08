@@ -579,10 +579,14 @@ public class HibernateDB {
   protected String getConfigPath() {
     //String configPath = properties.getProperty("vrspace.cfg");
     if ( configPath == null ) buildConfigPath();
-    return configPath + "../etc/hibernate.cfg.xml";
+    //return configPath + "../etc/hibernate.cfg.xml";
+    return configPath + "etc/hibernate.cfg.xml";
   }
   protected void buildConfigPath() {
     configPath = Util.getDir(Util.getLocation(this).getPath());
+    if ( configPath != null && configPath.indexOf("WEB-INF/") >= 0 ) {
+      configPath = configPath.substring(0,configPath.indexOf("WEB-INF/")+"WEB-INF/".length());
+    }
     Logger.logDebug("Current config path: "+configPath+" separator: "+File.pathSeparator+" location: "+Util.getLocation(this));
     //if ( !configPath.endsWith(File.pathSeparator) ) configPath += File.pathSeparator;
   }
@@ -765,7 +769,8 @@ public class HibernateDB {
     //String configPath = properties.getProperty("vrspace.cfg");
     //configPath = Util.getDir( configPath ) + "vrspace.hbm.xml";
     if ( configPath == null ) buildConfigPath();
-    return configPath + "../etc/ormapping.hbm.xml";
+    //return configPath + "../etc/ormapping.hbm.xml";
+    return configPath + "etc/ormapping.hbm.xml";
   }
 
   /**

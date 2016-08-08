@@ -6,6 +6,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import org.vrspace.util.*;
 import org.vrspace.server.*;
+import eu.diykits.ecotron.db.*;
 
 public class EcotronServer extends HttpServlet {
   private HibernateDB db;
@@ -32,17 +33,24 @@ public class EcotronServer extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	response.setContentType("text/html");
+    Logger.logDebug("Request received: " + request.getRequestURL());
+    response.setContentType("text/html");
 
-	PrintWriter out = response.getWriter();
-	out.println("<html><h1>OK</h1></html>");
-	out.flush();
-	out.close();
-	Logger.logDebug("Sent response.");
+    PrintWriter out = response.getWriter();
+    out.println("<html><h1>OK</h1></html>");
+    out.flush();
+    out.close();
+    Logger.logDebug("Sent response.");
+    try {
+      db.put(new GenericEntry(request.getParameterMap()));
+    } catch ( Exception e ) {
+      Logger.logError(e);
+    }
   }
 
   @Override
   public void destroy() {
+    Logger.stopStaticLogger();
   	Logger.logInfo("AAAARGH!!!");
   }
 }
