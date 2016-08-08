@@ -11,6 +11,10 @@
 package org.geomajas.quickstart.gwt2.client;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Label;
@@ -41,6 +45,7 @@ import org.geomajas.quickstart.gwt2.client.controller.feature.controller.Feature
 import org.geomajas.quickstart.gwt2.client.i18n.ApplicationMessages;
 import org.geomajas.quickstart.gwt2.client.resource.ApplicationResource;
 import org.vaadin.gwtgraphics.client.VectorObject;
+import org.vaadin.gwtgraphics.client.shape.Circle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +70,7 @@ public class ApplicationLayout extends ResizeComposite {
 	private final MapLayoutPanel mapLayoutPanel;
 
 	private List<Double> resolutions;
-
+	
 	/**
 	 * UI binder interface for this layout.
 	 */
@@ -100,7 +105,7 @@ public class ApplicationLayout extends ResizeComposite {
 		appService.setMapPresenter(mapPresenter);
 		appService.setMapLayoutPanel(mapLayoutPanel);
 
-		appService.getMapPresenter().getEventBus().addHandler(FeatureMouseOverHandler.TYPE, new MyFeatureMouseOverHandler());
+		//appService.getMapPresenter().getEventBus().addHandler(FeatureMouseOverHandler.TYPE, new MyFeatureMouseOverHandler());
 
 	}
 
@@ -161,10 +166,12 @@ public class ApplicationLayout extends ResizeComposite {
 
 		//add objects to Map
 		//Mikrotron
-		addObject(getVectorObject(new Coordinate(15.928245, 45.789566), "Mikrotron d.o.o."));		
+		addObject(getVectorObject(new Coordinate(15.928245, 45.789566), "Mikrotron d.o.o."));
+		jsConsoleLog("Added Mikrotron to map!");
 		//VETA
 		addObject(getVectorObject(new Coordinate(15.537470, 45.460168), "VETA d.o.o."));
-
+		jsConsoleLog("Added VETA to map!");
+		
 	}
 
 	private void addDemoLayer(){
@@ -178,12 +185,32 @@ public class ApplicationLayout extends ResizeComposite {
 		
 	}
 	
-	private VectorObject getVectorObject(Coordinate coordinate, String Title){
+	private VectorObject getVectorObject(Coordinate coordinate, String title){
 		
 		try {
 			VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
 					WktService.toGeometry(coordinatePointToString(coordinate)));
-			vObject.setTitle(Title);
+			vObject.setTitle(title);
+			vObject.addDomHandler(new MouseOverHandler() {
+	            @Override
+	            public void onMouseOver(MouseOverEvent e) {
+	            	jsConsoleLog("Mouse over " + e.getSource().toString());
+	            	ApplicationService.getInstance().getToolTip().clearContent();
+					List<Label> content = new ArrayList<Label>();
+					final Label label = new Label(((Circle)e.getSource()).getElement().getAttribute("title"));
+					label.addStyleName(ApplicationResource.INSTANCE.css().toolTipLine());
+					content.add(label);
+					ApplicationService.getInstance().getToolTip().addContentAndShow(
+							content, e.getClientX() + 5, e.getClientY() + 5);
+	            }
+	        }, MouseOverEvent.getType());
+			vObject.addDomHandler(new MouseOutHandler() {
+
+	            @Override
+	            public void onMouseOut(MouseOutEvent event) {
+	            	ApplicationService.getInstance().getToolTip().hide();
+	            }
+	        }, MouseOutEvent.getType());
 			return vObject;
 		} catch (WktException e) {
 			return null;
@@ -194,8 +221,22 @@ public class ApplicationLayout extends ResizeComposite {
 	private void addObject(VectorObject vObject){
 
 		VectorContainer vContainer = mapPresenter.getContainerManager().addWorldContainer();
+		
+		//add graphic element
 		GeomajasImpl.getInstance().getGfxUtil().applyFill(vObject, "#FF0000", 0.8);
 		GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#C00000", 1.0, 2, null);
+		
+
+
+//		vObject.addMouseOverHandler(new MouseOverHandler(){
+//
+//			@Override
+//			public void onMouseOver(MouseOverEvent event) {
+//				
+//				jsConsoleLog("Mouse over ");
+//			}
+//			
+//		});
 		vContainer.add(vObject);
 
 	}
@@ -239,65 +280,75 @@ public class ApplicationLayout extends ResizeComposite {
 			resolutions.add(EQUATOR_IN_METERS / (TILE_DIMENSION * Math.pow(2, i)));
 		}
 	}
+	
+	native void jsConsoleLog(String message) /*-{
+    try {
+        console.log(message);
+    } catch (e) {
+    }
+	}-*/;
+	
 
 	/**
 	 * Handler that handles FeatureMouseOverEvent.
 	 *
 	 * @author David Debuck
 	 */
-	private class MyFeatureMouseOverHandler implements FeatureMouseOverHandler {
-
-		@Override
-		public void onFeatureMouseOver(FeatureMouseOverEvent event) {
-
-			///////////////////////////////////////////////////////////////////////////////////////////
-			// Hide the tooltip when we receive a null value.
-			// This means that the mouse is not hovering over a feature.
-			///////////////////////////////////////////////////////////////////////////////////////////
-
-			if (event.getFeatures() == null) {
-				ApplicationService.getInstance().getToolTip().hide();
-				return;
-			}
-
-			List<Feature> features = event.getFeatures();
-
-			///////////////////////////////////////////////////////////////////////////////////////////
-			// Show the tooltip when there are features found.
-			///////////////////////////////////////////////////////////////////////////////////////////
-
-			if (!features.isEmpty()) {
-
-				ApplicationService.getInstance().getToolTip().clearContent();
-
-				List<Label> content = new ArrayList<Label>();
-
-				for (Feature feature : features) {
-					final Label label;
-					if (feature == null) {
-						label = new Label(msg.tooManyFeaturesToShow());
-					} else {
-						label = new Label(feature.getLabel());
-					}
-					label.addStyleName(ApplicationResource.INSTANCE.css().toolTipLine());
-					content.add(label);
-				}
-
-				// Calculate a position for where to show the tooltip.
-				int left = RootPanel.get().getAbsoluteLeft() + mapLayoutPanel.getAbsoluteLeft();
-				int top = RootPanel.get().getAbsoluteTop() + mapLayoutPanel.getAbsoluteTop();
-
-				// Add some extra pixels to the position of the tooltip so we still can drag the map.
-				ApplicationService.getInstance().getToolTip().addContentAndShow(
-						content,
-						left + (int) event.getCoordinate().getX() + 5,
-						top + (int) event.getCoordinate().getY() + 5
-				);
-
-			}
-
-		}
-
-	}
+//	private class MyFeatureMouseOverHandler implements FeatureMouseOverHandler {
+//		
+//		@Override
+//		public void onFeatureMouseOver(FeatureMouseOverEvent event) {
+//			
+//			///////////////////////////////////////////////////////////////////////////////////////////
+//			// Hide the tooltip when we receive a null value.
+//			// This means that the mouse is not hovering over a feature.
+//			///////////////////////////////////////////////////////////////////////////////////////////
+//			
+//			if (event.getFeatures() == null) {
+//				//ApplicationService.getInstance().getToolTip().hide();
+//				return;
+//			}
+//
+//			List<Feature> features = event.getFeatures();
+//
+//			///////////////////////////////////////////////////////////////////////////////////////////
+//			// Show the tooltip when there are features found.
+//			///////////////////////////////////////////////////////////////////////////////////////////
+//
+//			if (!features.isEmpty()) {
+//				
+//				ApplicationService.getInstance().getToolTip().clearContent();
+//
+//				List<Label> content = new ArrayList<Label>();
+//
+//				for (Feature feature : features) {
+//					final Label label;
+//					if (feature == null) {
+//						label = new Label(msg.tooManyFeaturesToShow());
+//					} else {
+//						label = new Label(feature.getLabel());
+//					}
+//					label.addStyleName(ApplicationResource.INSTANCE.css().toolTipLine());
+//					content.add(label);
+//				}
+//
+//				// Calculate a position for where to show the tooltip.
+//				int left = RootPanel.get().getAbsoluteLeft() + mapLayoutPanel.getAbsoluteLeft();
+//				int top = RootPanel.get().getAbsoluteTop() + mapLayoutPanel.getAbsoluteTop();
+//				
+//				jsConsoleLog("Content= " + content.get(0).toString());
+//				//jsConsoleLog("Left= " + event.getCoordinate().getX() + 5 + " Top= " + event.getCoordinate().getY() + 5);
+//				// Add some extra pixels to the position of the tooltip so we still can drag the map.
+//				ApplicationService.getInstance().getToolTip().addContentAndShow(
+//						content,
+//						left + (int) event.getCoordinate().getX() + 5,
+//						top + (int) event.getCoordinate().getY() + 5
+//				);
+//
+//			}
+//
+//		}
+//
+//	}
 
 }
