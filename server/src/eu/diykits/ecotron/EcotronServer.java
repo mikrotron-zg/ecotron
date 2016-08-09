@@ -8,8 +8,8 @@ import org.vrspace.util.*;
 import org.vrspace.server.*;
 import eu.diykits.ecotron.db.*;
 
-public class EcotronServer extends HttpServlet {
-  private HibernateDB db;
+public abstract class EcotronServer extends HttpServlet {
+  protected HibernateDB db;
 
   @Override
   public void init() throws ServletException {
@@ -32,23 +32,7 @@ public class EcotronServer extends HttpServlet {
   }
 
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    Logger.logDebug("Request received: " + request.getRequestURL());
-    response.setContentType("text/html");
-
-    PrintWriter out = response.getWriter();
-    try {
-      db.put(new GenericEntry(request.getParameterMap()));
-      out.println("<html><h1>OK</h1></html>");
-    } catch ( Exception e ) {
-      Logger.logError(e);
-      out.println("<html><h1>ERROR: "+e.getMessage()+"</h1></html>");
-    } finally {
-      out.flush();
-      out.close();
-    }
-    Logger.logDebug("Sent response.");
-  }
+  public abstract void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
   @Override
   public void destroy() {

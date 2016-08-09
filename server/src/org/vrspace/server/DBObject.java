@@ -692,6 +692,41 @@ public class DBObject implements Cloneable {
     return ret.toString();
   }
 
+  public String toCSVHeader( String separator ) throws IllegalAccessException {
+    if ( separator == null ) separator = ",";
+    StringBuilder ret = new StringBuilder();
+    Field [] fields = getClass().getFields();
+    for ( int i = 0; i < fields.length; i++ ) {
+      int mods = fields[i].getModifiers();
+      if ( ! Modifier.isFinal( mods ) && ! Modifier.isStatic( mods ) && ! fields[i].getName().equals( "db_id" ) ) {
+        ret.append("\"");
+        ret.append( fields[i].getName() );
+        ret.append("\"");
+        ret.append( separator );
+      }
+    }
+    if ( ret.length() > 0 ) ret.deleteCharAt(ret.length()-1);
+    return ret.toString();
+  }
+
+  public String toCSV( String separator ) throws IllegalAccessException {
+    if ( separator == null ) separator = ",";
+    StringBuilder ret = new StringBuilder();
+    Field [] fields = getClass().getFields();
+    for ( int i = 0; i < fields.length; i++ ) {
+      int mods = fields[i].getModifiers();
+      if ( ! Modifier.isFinal( mods ) && ! Modifier.isStatic( mods ) && ! fields[i].getName().equals( "db_id" ) ) {
+        Object val = fields[i].get( this );
+        ret.append("\"");
+        ret.append( val );
+        ret.append("\"");
+        ret.append( separator );
+      }
+    }
+    if ( ret.length() > 0 ) ret.deleteCharAt(ret.length()-1);
+    return ret.toString();
+  }
+
   /**
   Returns a member fields value represented as string.
   @param field Name of the member field.

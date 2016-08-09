@@ -7,14 +7,25 @@
 
   <!-- Servlets -->
   <servlet>
-    <servlet-name>EcotronServer</servlet-name>
-    <servlet-class>eu.diykits.ecotron.EcotronServer</servlet-class>
+    <servlet-name>EcotronUpload</servlet-name>
+    <servlet-class>eu.diykits.ecotron.EcotronUpload</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>EcotronServer</servlet-name>
+    <servlet-name>EcotronUpload</servlet-name>
     <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>EcotronDownload</servlet-name>
+    <servlet-class>eu.diykits.ecotron.EcotronDownload</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>EcotronDownload</servlet-name>
+    <url-pattern>/download</url-pattern>
   </servlet-mapping>
 
 </web-app>
