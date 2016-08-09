@@ -15,9 +15,14 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
@@ -28,6 +33,7 @@ import org.geomajas.configuration.client.ClientVectorLayerInfo;
 import org.geomajas.geometry.Coordinate;
 import org.geomajas.geometry.service.WktException;
 import org.geomajas.geometry.service.WktService;
+import org.geomajas.gwt.client.util.Dom;
 import org.geomajas.gwt2.client.GeomajasImpl;
 import org.geomajas.gwt2.client.GeomajasServerExtension;
 import org.geomajas.gwt2.client.event.MapInitializationEvent;
@@ -47,7 +53,9 @@ import org.geomajas.quickstart.gwt2.client.resource.ApplicationResource;
 import org.vaadin.gwtgraphics.client.VectorObject;
 import org.vaadin.gwtgraphics.client.shape.Circle;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -123,9 +131,9 @@ public class ApplicationLayout extends ResizeComposite {
 			ApplicationService.getInstance().setTooltipShowingAllowed(true);
 
 			// Add widgets to the map.
-			appService.getMapPresenter().getWidgetPane().add(
-					appService.getInfoButton().asWidget()
-			);
+//			appService.getMapPresenter().getWidgetPane().add(
+//					appService.getInfoButton().asWidget()
+//			);
 
 			appService.getMapPresenter().getWidgetPane().add(
 					appService.getLayerButton().asWidget()
@@ -204,13 +212,32 @@ public class ApplicationLayout extends ResizeComposite {
 							content, e.getClientX() + 5, e.getClientY() + 5);
 	            }
 	        }, MouseOverEvent.getType());
+			
 			vObject.addDomHandler(new MouseOutHandler() {
-
 	            @Override
 	            public void onMouseOut(MouseOutEvent event) {
 	            	ApplicationService.getInstance().getToolTip().hide();
 	            }
 	        }, MouseOutEvent.getType());
+			
+			vObject.addDomHandler(new ClickHandler(){
+				@Override
+				public void onClick(ClickEvent e) {
+					DemoDialogBox popup = new DemoDialogBox("Stanica: " + 
+						((Circle)e.getSource()).getElement().getAttribute("title"));
+					//popup.setText("Detaljni podaci");
+//				 	popup.setWidget(new Label("Stanica: " + 
+//		 			((Circle)e.getSource()).getElement().getAttribute("title") + 
+//		 			"\n\rZadnje očitanje:" + new Date().toString()));
+				 	//popup.center();
+					popup.writeContent("Zadnje očitanje:  " + new Date().toLocaleString());
+					popup.center();
+				 	popup.show();
+				 	
+				 	ApplicationService.getInstance().getToolTip().hide();
+				}
+			}, ClickEvent.getType());
+			
 			return vObject;
 		} catch (WktException e) {
 			return null;
