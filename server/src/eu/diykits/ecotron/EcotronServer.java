@@ -37,15 +37,17 @@ public class EcotronServer extends HttpServlet {
     response.setContentType("text/html");
 
     PrintWriter out = response.getWriter();
-    out.println("<html><h1>OK</h1></html>");
-    out.flush();
-    out.close();
-    Logger.logDebug("Sent response.");
     try {
       db.put(new GenericEntry(request.getParameterMap()));
+      out.println("<html><h1>OK</h1></html>");
     } catch ( Exception e ) {
       Logger.logError(e);
+      out.println("<html><h1>ERROR: "+e.getMessage()+"</h1></html>");
+    } finally {
+      out.flush();
+      out.close();
     }
+    Logger.logDebug("Sent response.");
   }
 
   @Override
