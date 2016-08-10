@@ -1,0 +1,28 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<!-- Dialog box as a part of Ecotron DEMO web application -->
+
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+	<ui:style>
+        p {
+        	padding: 5px;
+        }
+        .center {
+        	float: right; margin-right: 5px; margin-bottom: 5px;
+        }
+    </ui:style>
+    
+    <g:HTMLPanel>
+    	
+    		<p ui:field='dialogContent'></p>
+    		<br></br>
+    		<div>
+    			<g:Button styleName="{style.center}">OK</g:Button>
+    		</div>
+    		
+    </g:HTMLPanel>
+
+	
+	
+</ui:UiBinder>
