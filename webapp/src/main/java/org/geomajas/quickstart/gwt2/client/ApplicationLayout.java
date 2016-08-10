@@ -231,7 +231,7 @@ public class ApplicationLayout extends ResizeComposite {
 //		 			((Circle)e.getSource()).getElement().getAttribute("title") + 
 //		 			"\n\rZadnje očitanje:" + new Date().toString()));
 				 	//popup.center();
-					popup.writeContent("Zadnje očitanje:  " + new Date().toLocaleString());
+					popup.writeContent("Zadnje očitanje:");
 					popup.center();
 				 	popup.show();
 				 	FetchRequest fetch = new FetchRequest("alfa", popup);
