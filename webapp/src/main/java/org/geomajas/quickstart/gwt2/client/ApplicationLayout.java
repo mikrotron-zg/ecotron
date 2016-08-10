@@ -15,6 +15,7 @@ import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
 import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.http.client.RequestException;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.DomEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -233,7 +234,13 @@ public class ApplicationLayout extends ResizeComposite {
 					popup.writeContent("Zadnje očitanje:  " + new Date().toLocaleString());
 					popup.center();
 				 	popup.show();
-				 	
+				 	FetchRequest fetch = new FetchRequest("alfa", popup);
+				 	try {
+						fetch.send();
+					} catch (RequestException re) {
+						popup.writeContent("Error:  " + re);
+						re.printStackTrace();
+					}
 				 	ApplicationService.getInstance().getToolTip().hide();
 				}
 			}, ClickEvent.getType());

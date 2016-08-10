@@ -21,6 +21,7 @@ public class EcotronDownload extends EcotronServer {
     String stationId = request.getParameter("stationId");
     if ( stationId == null ) throw new ServletException( "Required parameter missing: stationId" );
     response.setHeader("Content-Disposition","attachment; filename="+stationId+".csv");
+    response.setHeader("Access-Control-Allow-Origin","*");
     try {
       Object[] ret = db.getRange("GenericEntry", "stationId", stationId);
       if ( ret.length > 0 ) out.println(((DBObject)ret[0]).toCSVHeader(delimiter));
