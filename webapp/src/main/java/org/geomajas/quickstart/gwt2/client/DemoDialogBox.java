@@ -5,9 +5,11 @@ package org.geomajas.quickstart.gwt2.client;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.LabelElement;
-import com.google.gwt.dom.client.ParagraphElement;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -15,12 +17,13 @@ import com.google.gwt.user.client.ui.Widget;
  * @author prexy
  *
  */
-public class DemoDialogBox extends DialogBox {
+public class DemoDialogBox extends DialogBox implements ClickHandler {
 
     interface Binder extends UiBinder<Widget, DemoDialogBox>{}
 	private static final Binder binder = GWT.create(Binder.class);
 
     @UiField LabelElement dialogContent;
+    @UiField LabelElement stationId;
     @UiField LabelElement gpsLongitude;
     @UiField LabelElement gpsLatitude;
     @UiField LabelElement can1;
@@ -31,12 +34,14 @@ public class DemoDialogBox extends DialogBox {
     @UiField LabelElement temp;
     @UiField LabelElement gpsTime;
     @UiField LabelElement time;
+    @UiField Button button;
     
     public DemoDialogBox(String dialogBoxTitle) {
         setWidget(binder.createAndBindUi(this));
         setAutoHideEnabled(true);
         setGlassEnabled(true);
         setText(dialogBoxTitle);
+        button.addClickHandler(this);
     } 
 
     public void writeContent(String content) {
@@ -64,7 +69,12 @@ public class DemoDialogBox extends DialogBox {
     		gpsTime.setInnerText(val);
     	} else if ( "time".equals(field)) {
     		time.setInnerText(val);
+    	} else if ( "stationId".equals(field)) {
+    		stationId.setInnerText(val);
     	}
     }
-    //TODO add click handler for OK button
+	@Override
+	public void onClick(ClickEvent event) {
+		hide();
+	}
 }

@@ -17,6 +17,7 @@
     	
     	<p>
    		<div><label ui:field='dialogContent'/></div>
+   		<div>Mjerna stanica <label ui:field='stationId'/></div>
    		<br/>
    		<div>Popunjenost kontejnera: </div>
    		<div><label ui:field='can1'/></div>
@@ -32,7 +33,7 @@
    		<div>Geografska širina: <label ui:field='gpsLatitude'/></div>
    		</p>
    		<div>
-   			<g:Button styleName="{style.center}">OK</g:Button>
+   			<g:Button styleName="{style.center}" ui:field='button'>OK</g:Button>
    		</div>
     		
     </g:HTMLPanel>

@@ -64,33 +64,26 @@ import java.util.List;
  */
 public class ApplicationLayout extends ResizeComposite {
 
-	private static final int TILE_DIMENSION = 256;
-
-	private static final int MAX_ZOOM_LEVELS = 19;
-
-	private static final double EQUATOR_IN_METERS = 40075016.686;
-
-	private static final double HALF_EQUATOR_IN_METERS = 40075016.686 / 2;
-
-	private final ApplicationService appService;
-
-	private final MapPresenter mapPresenter;
-
-	private final MapLayoutPanel mapLayoutPanel;
-
-	private List<Double> resolutions;
+	//TODO: hold stationId,VectorObject map of all objects
+	private VectorObject mikrotron;
+	private VectorObject veta;
 	
+	private static final int TILE_DIMENSION = 256;
+	private static final int MAX_ZOOM_LEVELS = 19;
+	private static final double EQUATOR_IN_METERS = 40075016.686;
+	private static final double HALF_EQUATOR_IN_METERS = 40075016.686 / 2;
+	private final ApplicationService appService;
+	private final MapPresenter mapPresenter;
+	private final MapLayoutPanel mapLayoutPanel;
+	private List<Double> resolutions;
+
 	/**
 	 * UI binder interface for this layout.
 	 */
 	interface MyUiBinder extends UiBinder<Widget, ApplicationLayout> {
-
 	}
-
 	private ApplicationMessages msg = GWT.create(ApplicationMessages.class);
-
 	private static final MyUiBinder UIBINDER = GWT.create(MyUiBinder.class);
-
 	@UiField
 	protected SimpleLayoutPanel mapPanel;
 
@@ -175,10 +168,12 @@ public class ApplicationLayout extends ResizeComposite {
 
 		//add objects to Map
 		//Mikrotron
-		addObject(getVectorObject(new Coordinate(15.928245, 45.789566), "Mikrotron d.o.o."));
+		mikrotron = getVectorObject(new Coordinate(15.928245, 45.789566), "Mikrotron d.o.o.");
+		addObject(mikrotron);
 		jsConsoleLog("Added Mikrotron to map!");
 		//VETA
-		addObject(getVectorObject(new Coordinate(15.537470, 45.460168), "VETA d.o.o."));
+		veta = getVectorObject(new Coordinate(15.537470, 45.460168), "VETA d.o.o.");
+		addObject(veta);
 		jsConsoleLog("Added VETA to map!");
 		
 	}
@@ -197,7 +192,7 @@ public class ApplicationLayout extends ResizeComposite {
 	private VectorObject getVectorObject(Coordinate coordinate, String title){
 		
 		try {
-			VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
+			final VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
 					WktService.toGeometry(coordinatePointToString(coordinate)));
 			vObject.setTitle(title);
 			vObject.addDomHandler(new MouseOverHandler() {
@@ -224,8 +219,10 @@ public class ApplicationLayout extends ResizeComposite {
 			vObject.addDomHandler(new ClickHandler(){
 				@Override
 				public void onClick(ClickEvent e) {
-					DemoDialogBox popup = new DemoDialogBox("Stanica: " + 
-						((Circle)e.getSource()).getElement().getAttribute("title"));
+					String name = ((Circle)e.getSource()).getElement().getAttribute("title");
+					String stationId = "KarlovacTest";
+					if ( name.startsWith("Mikrotron")) stationId = "alfa";
+					DemoDialogBox popup = new DemoDialogBox("Stanica: " + name);
 					//popup.setText("Detaljni podaci");
 //				 	popup.setWidget(new Label("Stanica: " + 
 //		 			((Circle)e.getSource()).getElement().getAttribute("title") + 
@@ -234,7 +231,7 @@ public class ApplicationLayout extends ResizeComposite {
 					popup.writeContent("Zadnje očitanje:");
 					popup.center();
 				 	popup.show();
-				 	FetchRequest fetch = new FetchRequest("alfa", popup);
+				 	FetchRequest fetch = new FetchRequest(stationId, vObject, popup);
 				 	try {
 						fetch.send();
 					} catch (RequestException re) {
