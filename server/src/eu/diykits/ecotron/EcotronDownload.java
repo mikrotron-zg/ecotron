@@ -14,15 +14,18 @@ public class EcotronDownload extends EcotronServer {
     Logger.logDebug("Request received: " + request.getRequestURL());
     response.setContentType("text/csv");
 
+    String delimiter = request.getParameter("delimiter");
+    if ( delimiter != null ) delimiter = ";";
+
     PrintWriter out = response.getWriter();
     String stationId = request.getParameter("stationId");
     if ( stationId == null ) throw new ServletException( "Required parameter missing: stationId" );
     response.setHeader("Content-Disposition","attachment; filename="+stationId+".csv");
     try {
       Object[] ret = db.getRange("GenericEntry", "stationId", stationId);
-      if ( ret.length > 0 ) out.println(((DBObject)ret[0]).toCSVHeader(null));
+      if ( ret.length > 0 ) out.println(((DBObject)ret[0]).toCSVHeader(delimiter));
       for ( Object el: ret ) {
-        out.println(((DBObject)el).toCSV(null));
+        out.println(((DBObject)el).toCSV(delimiter));
       }
     } catch ( Exception e ) {
       Logger.logError(e);
