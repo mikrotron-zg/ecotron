@@ -11,11 +11,11 @@ import eu.diykits.ecotron.db.*;
 public class EcotronLast extends EcotronServer {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    Logger.logDebug("Request received: " + request.getRequestURL());
     response.setContentType("application/json");
 
     PrintWriter out = response.getWriter();
     String stationId = request.getParameter("stationId");
+    Logger.logDebug("Request received: " + request.getRequestURL() + " looking for stationId " + stationId);
     if ( stationId == null ) throw new ServletException( "Required parameter missing: stationId" );
 
     response.setHeader("Access-Control-Allow-Origin","*");
@@ -26,7 +26,7 @@ public class EcotronLast extends EcotronServer {
       if ( ret.length > 0 ) {
         last = (GenericEntry) ret[0];
         for ( Object el: ret ) {
-          if ( ((GenericEntry)el).db_id > last.db_id ) last = (GenericEntry) el;
+          if ( el != null && ((GenericEntry)el).db_id > last.db_id ) last = (GenericEntry) el;
         }
       }
       out.println(last.toJSON());
