@@ -727,6 +727,36 @@ public class DBObject implements Cloneable {
     return ret.toString();
   }
 
+  public String toJSON() throws IllegalAccessException {
+    StringBuilder ret = new StringBuilder();
+    Field [] fields = getClass().getFields();
+    ret.append("{");
+    for ( int i = 0; i < fields.length; i++ ) {
+      int mods = fields[i].getModifiers();
+      if ( ! Modifier.isFinal( mods ) && ! Modifier.isStatic( mods ) && ! fields[i].getName().equals( "db_id" ) ) {
+        ret.append("\"");
+        ret.append(fields[i].getName());
+        ret.append("\"");
+        ret.append(":");
+        Object val = fields[i].get(this);
+        //TODO: support boolean
+        if ( val == null ) {
+          ret.append("null");
+        } else if ( val instanceof Number ) {
+          ret.append(val);
+        } else {
+          ret.append("\"");
+          ret.append(val);
+          ret.append("\"");
+        }
+        ret.append(",");
+      }
+    }
+    ret.deleteCharAt(ret.length()-1);
+    ret.append("}");
+    return ret.toString();
+  }
+
   /**
   Returns a member fields value represented as string.
   @param field Name of the member field.

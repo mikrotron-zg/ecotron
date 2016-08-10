@@ -28,4 +28,15 @@
     <url-pattern>/download</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>EcotronLast</servlet-name>
+    <servlet-class>eu.diykits.ecotron.EcotronLast</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>EcotronLast</servlet-name>
+    <url-pattern>/last</url-pattern>
+  </servlet-mapping>
+
 </web-app>
