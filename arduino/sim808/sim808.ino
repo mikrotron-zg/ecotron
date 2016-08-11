@@ -5,15 +5,22 @@
 
 // runtime options
 #define DEBUG true  // run in debug mode
+#define MANUAL false // manual control mode
 #define HCTO 15000  // HC-SR40 distance sensor
 
 // software serial to sim808
-SoftwareSerial sim808(10,3);
+SoftwareSerial sim808(10,8);
 
 // sim808 controls
 #define RI 12    // status
 #define PWR 13   // soft power switch
 #define DTR 11   // sleep
+
+// temperature sensor
+#define TMP A0   // signal pin
+#define RESISTOR 10000  // sensor internal resistor value
+double Rval[]={5.301,4.48,3.62};
+double Tval[]={-40,0,50};
 
 // carrier data for GSM network
 String PIN="4448";
@@ -25,59 +32,27 @@ String gpsdata="";
 String gpsp="&gpsInfo=";
 
 // HC-SR40 pinout data
-int marcos[]={A0,A2,A4,7,5};
-int polos[]={A1,A3,A5,6,4};
+int marcos[]={3,A2,A4,7,5};                                                                                 
+int polos[]={2,A3,A5,6,4};
+int states[]={-1,-1,-1,-1,-1};
 
 boolean repflag=false;
 
-void setup() {
-  pinMode(13,OUTPUT);
-  pinMode(12,INPUT);
-  pinMode(11,OUTPUT);
-  pinMode(marcos[0],OUTPUT);
-  pinMode(polos[0],INPUT);
+void setup(){
+  pinsetup();
   Serial.begin(9600);
-  digitalWrite(11,LOW);
-  digitalWrite(marcos[0],LOW);
-  delay(54);
   sim808.begin(9600);
-  if(digitalRead(RI)){
-    debugPrint("restarting sim808...");
-    digitalWrite(PWR,HIGH);
-    delay(2050);
-    digitalWrite(PWR,LOW);
-    delay(1000);
-    digitalWrite(PWR,HIGH);
-    delay(2050);
-    digitalWrite(PWR,LOW);
-  }else{
-    debugPrint("starting sim808...");
-    digitalWrite(PWR,HIGH);
-    delay(2050);
-    digitalWrite(PWR,LOW);
-  }
-  delay(2000);
+  sim808su();
+  sim808wu();
 }
 
-bool sync(){
-  String msg=sim808.readStringUntil('K');
-  return msg=="O";
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  if(!digitalRead(12)){
-    Serial.println("sim808 not on!");
-    delay(2000);
+void loop(){
+  if(!digitalRead(RI)){
+    //ToDo: handle dead module
+    debugPrintln("sim808 not on!");
   }
-  if(sim808.available())Serial.write(sim808.read());
-  if(Serial.available()){ 
-    while(Serial.available()){
-      sim808.write(Serial.read());
-    }
-    sim808.println();
-  }
-  if(!repflag&&digitalRead(RI)){
+  debugStream();
+  if(!repflag&&digitalRead(RI)&&!MANUAL){
     Serial.println("test "+PIN);
     if(!simcheck())return;else Serial.println("sim started!");
     if(!initgprs())return;else Serial.println("gprs started!");
@@ -89,6 +64,6 @@ void loop() {
     report();
     delay(5000);
   }
-  //Serial.println(String(getmeasure(10))+"cm");
+  //Serial.println(String(getmeasure(0,10))+"cm");
   //delay(1000);
 }
