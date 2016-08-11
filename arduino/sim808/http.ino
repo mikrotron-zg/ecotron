@@ -1,4 +1,8 @@
 boolean report(){
+  for(int i=0;i<5;i++){
+    getmeasure(i,10);
+    debugPrintln(String(i)+": "+String(states[i]));
+  }
   if(!initHTTP()){stopHTTP();return false;}
   if(!setCID())return false;
   getGPSinfo();
@@ -26,6 +30,10 @@ boolean setURL(){
   streamString(SERVER);
   streamString(gpsp);
   streamString(gpsdata);
+  for(int i=0;i<5;i++){
+    streamString("&can"+String(i+1)+"="+String(states[i]));
+  }
+  streamString("&temp="+String(getT()));
   return checkResp("\"",20,3000,"OK");
 }
 
