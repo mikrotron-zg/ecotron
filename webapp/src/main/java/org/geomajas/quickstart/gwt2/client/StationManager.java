@@ -94,7 +94,7 @@ public class StationManager {
 				@Override
 				public void onClick(ClickEvent e) {
 					String name = ((Circle)e.getSource()).getElement().getAttribute("title");
-					makePopup(stationId, vObject);
+					makePopup(stationId, vObject, e);
 				 	ApplicationService.getInstance().getToolTip().hide();
 				}
 			}, ClickEvent.getType());
@@ -107,10 +107,14 @@ public class StationManager {
 		
 	}
 
-	private void makePopup( String stationId, VectorObject vObject ) {
+	private void makePopup( String stationId, VectorObject vObject, ClickEvent e ) {
 		DemoDialogBox popup = new DemoDialogBox("Stanica: " + stationId);
 		popup.writeContent("Zadnje očitanje:");
-		popup.center();
+		if ( e == null ) {
+			popup.center();
+		} else {
+			popup.setPopupPosition(e.getClientX(), e.getClientY());
+		}
 	 	popup.show();
 	 	FetchRequest fetch = new FetchRequest(stationId, vObject, popup);
 	 	try {
