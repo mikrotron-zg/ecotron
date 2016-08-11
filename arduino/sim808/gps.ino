@@ -21,8 +21,7 @@ String parseinfo(){
   String s1=getString(60,timeout);
   String s2=getString(60,timeout);
   state=s1+s2;
-  debugPrintln("s1: "+s1);
-  debugPrintln("s2: "+s2);
+  debugPrintln(state);
   if(inString(state,"OK")){
     debugPrintln("OK");
     state=state.substring(state.indexOf(" ")+1);

@@ -32,8 +32,8 @@ String gpsdata="";
 String gpsp="&gpsInfo=";
 
 // HC-SR40 pinout data
-int marcos[]={3,A2,A4,7,5};                                                                                 
-int polos[]={2,A3,A5,6,4};
+int marcos[]={3,A2,A4,7,5};
+int polos[]={2,A1,A3,6,4};
 int states[]={-1,-1,-1,-1,-1};
 
 boolean repflag=false;
