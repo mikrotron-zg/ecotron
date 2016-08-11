@@ -161,8 +161,8 @@ public class ApplicationLayout extends ResizeComposite {
 	public void addObject(VectorObject vObject){
 
 		//add graphic element
-		GeomajasImpl.getInstance().getGfxUtil().applyFill(vObject, "#FF0000", 0.8);
-		GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#C00000", 1.0, 2, null);
+		GeomajasImpl.getInstance().getGfxUtil().applyFill(vObject,   "#FF0000", 0.8);
+		//GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#C00000", 1, 7, null);
 		
 //		vObject.addMouseOverHandler(new MouseOverHandler(){
 //

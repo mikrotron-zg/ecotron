@@ -60,12 +60,14 @@ public class StationManager {
 	}
 	private VectorObject getVectorObject(Coordinate coordinate, final String stationId, String title){
 		
-		//try {
-			//final VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
-			//		WktService.toGeometry(coordinatePointToString(coordinate)));
+		try {
+			final VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
+					WktService.toGeometry(coordinatePointToString(coordinate)));
+			GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#C00000", 1, 10, null);
 			coordinate = toProjection(coordinate);
-			final VectorObject vObject = new Circle(coordinate.getX(), coordinate.getY(), 1000);
 			final VectorObject text = new Text(coordinate.getX(), coordinate.getY(), title);
+			text.setTranslation(20, 0);
+			GeomajasImpl.getInstance().getGfxUtil().applyStroke(text, "#000000", 1, 1, null);
 			final Group group = new Group();
 			group.add(vObject);
 			group.add(text);
@@ -101,9 +103,9 @@ public class StationManager {
 			
 			//return vObject;
 			return group;
-		//} catch (WktException e) {
-		//	return null;
-		//}
+		} catch (Exception e) {
+			return null;
+		}
 		
 	}
 
