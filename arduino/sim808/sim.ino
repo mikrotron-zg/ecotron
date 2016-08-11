@@ -7,16 +7,16 @@ boolean simcheck(){
 }
 
 boolean ATcheck(){
-  if(DEBUG)Serial.print("AT ");
+  debugPrint("AT ");
   return checkResp("at",20,1000,"OK");
 }
 
 boolean echocheck(){
-  if(DEBUG)Serial.print("echo ");
+  debugPrint("echo ");
   return checkResp("ate0",20,1000,"OK");
 }
 
 boolean unlocksim(){
-  if(DEBUG)Serial.print("unlock ");
+  debugPrint("unlock ");
   return checkResp("at+cpin="+PIN,60,5000,"READY");
 }
