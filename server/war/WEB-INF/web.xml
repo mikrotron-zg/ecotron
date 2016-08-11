@@ -7,14 +7,47 @@
 
   <!-- Servlets -->
   <servlet>
-    <servlet-name>EcotronServer</servlet-name>
-    <servlet-class>eu.diykits.ecotron.EcotronServer</servlet-class>
+    <servlet-name>EcotronUpload</servlet-name>
+    <servlet-class>eu.diykits.ecotron.EcotronUpload</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>EcotronServer</servlet-name>
+    <servlet-name>EcotronUpload</servlet-name>
     <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>EcotronDownload</servlet-name>
+    <servlet-class>eu.diykits.ecotron.EcotronDownload</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>EcotronDownload</servlet-name>
+    <url-pattern>/download</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>EcotronLast</servlet-name>
+    <servlet-class>eu.diykits.ecotron.EcotronLast</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>EcotronLast</servlet-name>
+    <url-pattern>/last</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>EcotronStations</servlet-name>
+    <servlet-class>eu.diykits.ecotron.EcotronStations</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>EcotronStations</servlet-name>
+    <url-pattern>/stations</url-pattern>
   </servlet-mapping>
 
 </web-app>

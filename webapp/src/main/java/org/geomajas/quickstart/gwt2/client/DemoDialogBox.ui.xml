@@ -1,0 +1,43 @@
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+
+<!-- Dialog box as a part of Ecotron DEMO web application -->
+
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+	<ui:style>
+        p {
+        	padding: 5px;
+        }
+        .center {
+        	float: right; margin-right: 5px; margin-bottom: 5px;
+        }
+    </ui:style>
+    
+    <g:HTMLPanel>
+    	
+    	<p>
+   		<div><label ui:field='dialogContent'/></div>
+   		<div>Mjerna stanica <label ui:field='stationId'/></div>
+   		<br/>
+   		<div>Popunjenost kontejnera: </div>
+   		<div><label ui:field='can1'/></div>
+   		<div><label ui:field='can2'/></div>
+   		<div><label ui:field='can3'/></div>
+   		<div><label ui:field='can4'/></div>
+   		<div><label ui:field='can5'/></div>
+   		<br/>
+   		<div>Vrijeme: <label ui:field='time'/></div>
+   		<div>GPS Vrijeme: <label ui:field='gpsTime'/></div>
+   		<div>Temperatura: <label ui:field='temp'/></div>
+   		<div>Geografska duljina: <label ui:field='gpsLongitude'/></div>
+   		<div>Geografska širina: <label ui:field='gpsLatitude'/></div>
+   		</p>
+   		<div>
+   			<g:Button styleName="{style.center}" ui:field='button'>OK</g:Button>
+   		</div>
+    		
+    </g:HTMLPanel>
+
+	
+	
+</ui:UiBinder>

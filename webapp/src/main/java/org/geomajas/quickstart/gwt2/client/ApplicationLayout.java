@@ -1,0 +1,385 @@
+/*
+ * This is part of Geomajas, a GIS framework, http://www.geomajas.org/.
+ *
+ * Copyright 2008-2015 Geosparc nv, http://www.geosparc.com/, Belgium.
+ *
+ * The program is available in open source according to the GNU Affero
+ * General Public License. All contributions in this program are covered
+ * by the Geomajas Contributors License Agreement. For full licensing
+ * details, see LICENSE.txt in the project root.
+ */
+package org.geomajas.quickstart.gwt2.client;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DomEvent;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.ResizeComposite;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimpleLayoutPanel;
+import com.google.gwt.user.client.ui.Widget;
+
+import org.geomajas.configuration.LayerInfo;
+import org.geomajas.configuration.client.ClientVectorLayerInfo;
+import org.geomajas.geometry.Coordinate;
+import org.geomajas.geometry.service.WktException;
+import org.geomajas.geometry.service.WktService;
+import org.geomajas.gwt.client.util.Dom;
+import org.geomajas.gwt2.client.GeomajasImpl;
+import org.geomajas.gwt2.client.GeomajasServerExtension;
+import org.geomajas.gwt2.client.event.MapInitializationEvent;
+import org.geomajas.gwt2.client.event.MapInitializationHandler;
+import org.geomajas.gwt2.client.gfx.VectorContainer;
+import org.geomajas.gwt2.client.map.MapPresenter;
+import org.geomajas.gwt2.client.map.feature.Feature;
+import org.geomajas.gwt2.client.map.layer.VectorServerLayerImpl;
+import org.geomajas.gwt2.client.map.layer.tile.TileConfiguration;
+import org.geomajas.gwt2.client.widget.MapLayoutPanel;
+import org.geomajas.gwt2.plugin.tilebasedlayer.client.TileBasedLayerClient;
+import org.geomajas.gwt2.plugin.tilebasedlayer.client.layer.OsmLayer;
+import org.geomajas.quickstart.gwt2.client.controller.feature.controller.FeatureMouseOverEvent;
+import org.geomajas.quickstart.gwt2.client.controller.feature.controller.FeatureMouseOverHandler;
+import org.geomajas.quickstart.gwt2.client.i18n.ApplicationMessages;
+import org.geomajas.quickstart.gwt2.client.resource.ApplicationResource;
+import org.vaadin.gwtgraphics.client.VectorObject;
+import org.vaadin.gwtgraphics.client.shape.Circle;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+/**
+ * General Application layout for this application.
+ */
+public class ApplicationLayout extends ResizeComposite {
+
+	//TODO: hold stationId,VectorObject map of all objects
+	private VectorObject mikrotron;
+	private VectorObject veta;
+	
+	private static final int TILE_DIMENSION = 256;
+	private static final int MAX_ZOOM_LEVELS = 19;
+	private static final double EQUATOR_IN_METERS = 40075016.686;
+	private static final double HALF_EQUATOR_IN_METERS = 40075016.686 / 2;
+	private final ApplicationService appService;
+	private final MapPresenter mapPresenter;
+	private final MapLayoutPanel mapLayoutPanel;
+	private List<Double> resolutions;
+
+	/**
+	 * UI binder interface for this layout.
+	 */
+	interface MyUiBinder extends UiBinder<Widget, ApplicationLayout> {
+	}
+	private ApplicationMessages msg = GWT.create(ApplicationMessages.class);
+	private static final MyUiBinder UIBINDER = GWT.create(MyUiBinder.class);
+	@UiField
+	protected SimpleLayoutPanel mapPanel;
+
+	/**
+	 * Constructor.
+	 */
+	public ApplicationLayout() {
+		initWidget(UIBINDER.createAndBindUi(this));
+		ApplicationResource.INSTANCE.css().ensureInjected();
+
+		mapPresenter = GeomajasImpl.getInstance().createMapPresenter();
+		mapPresenter.getEventBus().addMapInitializationHandler(new MyMapInitializationHandler());
+
+		GeomajasServerExtension.getInstance().initializeMap(mapPresenter, "app", "mapMain");
+
+		mapLayoutPanel = new MapLayoutPanel();
+		mapLayoutPanel.setPresenter(mapPresenter);
+		mapPanel.add(mapLayoutPanel);
+
+		appService = ApplicationService.getInstance();
+		appService.setMapPresenter(mapPresenter);
+		appService.setMapLayoutPanel(mapLayoutPanel);
+
+		//appService.getMapPresenter().getEventBus().addHandler(FeatureMouseOverHandler.TYPE, new MyFeatureMouseOverHandler());
+
+	}
+
+	/**
+	 * Handler which will initialize commands given after the map has been initialized.
+	 * This handler was added to the event bus of the map presenter.
+	 */
+	private class MyMapInitializationHandler implements MapInitializationHandler {
+
+		@Override
+		public void onMapInitialized(MapInitializationEvent mapInitializationEvent) {
+			initializeLayer();
+
+			ApplicationService.getInstance().addFeatureMouseOverListener();
+			ApplicationService.getInstance().setTooltipShowingAllowed(true);
+
+			// Add widgets to the map.
+//			appService.getMapPresenter().getWidgetPane().add(
+//					appService.getInfoButton().asWidget()
+//			);
+
+			appService.getMapPresenter().getWidgetPane().add(
+					appService.getLayerButton().asWidget()
+			);
+
+		}
+	}
+
+	/**
+	 * Initialize the OSM layer by creating a new {@link org.geomajas.gwt2.client.map.layer.tile.TileBasedLayer}
+	 * and a {@link org.geomajas.gwt2.client.map.layer.tile.TileConfiguration}.
+	 * <p/>
+	 * Values such as {@code {z}, {x}, {y}} are optional and will be used to substitute the tile level, X-ordinate and
+	 * Y-ordinate.
+	 * <p/>
+	 * The tile based layer service can be given different URLs in which case Round-robin will be performed to
+	 * determine the next URL to load tiles from.
+	 */
+	private void initializeLayer() {
+		// Set the URL to the service and the file extension:
+		String[] domains = new String[] { "a", "b", "c" };
+		List<String> urls = new ArrayList<String>();
+		for (String domain : domains) {
+			urls.add("http://" + domain + ".tile.openstreetmap.org/{z}/{x}/{y}.png");
+		}
+
+		// Create the configuration for the tiles:
+		Coordinate tileOrigin = new Coordinate(-HALF_EQUATOR_IN_METERS, -HALF_EQUATOR_IN_METERS);
+		initializeResolutions();
+		TileConfiguration tileConfig = new TileConfiguration(TILE_DIMENSION, TILE_DIMENSION, tileOrigin, resolutions);
+
+		// Create a new layer with the configurations and add it to the maps:
+		OsmLayer osmLayer = TileBasedLayerClient.getInstance().createOsmLayer("OpenStreetMap", tileConfig, urls);
+		mapPresenter.getLayersModel().addLayer(osmLayer);
+		mapPresenter.getLayersModel().moveLayer(osmLayer, 0);
+		
+		//addDemoLayer();
+
+		//add objects to Map
+		//Mikrotron
+		mikrotron = getVectorObject(new Coordinate(15.928245, 45.789566), "Mikrotron d.o.o.");
+		addObject(mikrotron);
+		jsConsoleLog("Added Mikrotron to map!");
+		//VETA
+		veta = getVectorObject(new Coordinate(15.537470, 45.460168), "VETA d.o.o.");
+		addObject(veta);
+		jsConsoleLog("Added VETA to map!");
+		
+	}
+
+	private void addDemoLayer(){
+		// adds Ecotron layer to map
+		
+		ClientVectorLayerInfo layerInfo = new ClientVectorLayerInfo();
+		layerInfo.setId("Ecotron"); //FIXME not working - layer info definition unknown
+		VectorServerLayerImpl ecoLayer = new VectorServerLayerImpl(mapPresenter.getConfiguration(),
+				layerInfo, mapPresenter.getViewPort(), mapPresenter.getEventBus());
+		mapPresenter.getLayersModel().addLayer(ecoLayer);
+		
+	}
+	
+	private VectorObject getVectorObject(Coordinate coordinate, String title){
+		
+		try {
+			final VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
+					WktService.toGeometry(coordinatePointToString(coordinate)));
+			vObject.setTitle(title);
+			vObject.addDomHandler(new MouseOverHandler() {
+	            @Override
+	            public void onMouseOver(MouseOverEvent e) {
+	            	jsConsoleLog("Mouse over " + e.getSource().toString());
+	            	ApplicationService.getInstance().getToolTip().clearContent();
+					List<Label> content = new ArrayList<Label>();
+					final Label label = new Label(((Circle)e.getSource()).getElement().getAttribute("title"));
+					label.addStyleName(ApplicationResource.INSTANCE.css().toolTipLine());
+					content.add(label);
+					ApplicationService.getInstance().getToolTip().addContentAndShow(
+							content, e.getClientX() + 5, e.getClientY() + 5);
+	            }
+	        }, MouseOverEvent.getType());
+			
+			vObject.addDomHandler(new MouseOutHandler() {
+	            @Override
+	            public void onMouseOut(MouseOutEvent event) {
+	            	ApplicationService.getInstance().getToolTip().hide();
+	            }
+	        }, MouseOutEvent.getType());
+			
+			vObject.addDomHandler(new ClickHandler(){
+				@Override
+				public void onClick(ClickEvent e) {
+					String name = ((Circle)e.getSource()).getElement().getAttribute("title");
+					String stationId = "KarlovacTest";
+					if ( name.startsWith("Mikrotron")) stationId = "alfa";
+					DemoDialogBox popup = new DemoDialogBox("Stanica: " + name);
+					//popup.setText("Detaljni podaci");
+//				 	popup.setWidget(new Label("Stanica: " + 
+//		 			((Circle)e.getSource()).getElement().getAttribute("title") + 
+//		 			"\n\rZadnje očitanje:" + new Date().toString()));
+				 	//popup.center();
+					popup.writeContent("Zadnje očitanje:");
+					popup.center();
+				 	popup.show();
+				 	FetchRequest fetch = new FetchRequest(stationId, vObject, popup);
+				 	try {
+						fetch.send();
+					} catch (RequestException re) {
+						popup.writeContent("Error:  " + re);
+						re.printStackTrace();
+					}
+				 	ApplicationService.getInstance().getToolTip().hide();
+				}
+			}, ClickEvent.getType());
+			
+			return vObject;
+		} catch (WktException e) {
+			return null;
+		}
+		
+	}
+	
+	private void addObject(VectorObject vObject){
+
+		VectorContainer vContainer = mapPresenter.getContainerManager().addWorldContainer();
+		
+		//add graphic element
+		GeomajasImpl.getInstance().getGfxUtil().applyFill(vObject, "#FF0000", 0.8);
+		GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#C00000", 1.0, 2, null);
+		
+
+
+//		vObject.addMouseOverHandler(new MouseOverHandler(){
+//
+//			@Override
+//			public void onMouseOver(MouseOverEvent event) {
+//				
+//				jsConsoleLog("Mouse over ");
+//			}
+//			
+//		});
+		vContainer.add(vObject);
+
+	}
+	
+	private String coordinatePointToString(Coordinate point){
+		point = toProjection(point);
+		return "POINT (" + point.getX() + " " + point.getY() + ")";
+	}
+	
+	private Coordinate toProjection(Coordinate point){
+
+//	    CHECKME Can't use this code on client side
+//		try {
+//			GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+//			CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
+//			CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857");
+//			MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, false);
+//			Point temp = (Point) JTS.transform(geometryFactory.createPoint(new com.vividsolutions.jts.geom.Coordinate(
+//					point.getX(), point.getY())), transform);
+//			return new Coordinate(temp.getX(), temp.getY());
+//		} catch (NoSuchAuthorityCodeException e) {
+//			//quiet quit
+//		} catch (FactoryException e) {
+//			//quiet quit
+//		} catch (TransformException e) {
+//			//quiet quit
+//		}
+
+		double x = point.getX() * 20037508.34 / 180;
+		double y = Math.log(Math.tan((90 + point.getY()) * Math.PI / 360)) / (Math.PI / 180);
+		y *= 20037508.34 / 180;
+		return new Coordinate(x, y);
+	}
+	
+	/**
+	 * Generate a list of resolutions for the available zoom levels.
+	 */
+	private void initializeResolutions() {
+		resolutions = new ArrayList<Double>();
+		for (int i = 0; i < MAX_ZOOM_LEVELS; i++) {
+			resolutions.add(EQUATOR_IN_METERS / (TILE_DIMENSION * Math.pow(2, i)));
+		}
+	}
+	
+	native void jsConsoleLog(String message) /*-{
+    try {
+        console.log(message);
+    } catch (e) {
+    }
+	}-*/;
+	
+
+	/**
+	 * Handler that handles FeatureMouseOverEvent.
+	 *
+	 * @author David Debuck
+	 */
+//	private class MyFeatureMouseOverHandler implements FeatureMouseOverHandler {
+//		
+//		@Override
+//		public void onFeatureMouseOver(FeatureMouseOverEvent event) {
+//			
+//			///////////////////////////////////////////////////////////////////////////////////////////
+//			// Hide the tooltip when we receive a null value.
+//			// This means that the mouse is not hovering over a feature.
+//			///////////////////////////////////////////////////////////////////////////////////////////
+//			
+//			if (event.getFeatures() == null) {
+//				//ApplicationService.getInstance().getToolTip().hide();
+//				return;
+//			}
+//
+//			List<Feature> features = event.getFeatures();
+//
+//			///////////////////////////////////////////////////////////////////////////////////////////
+//			// Show the tooltip when there are features found.
+//			///////////////////////////////////////////////////////////////////////////////////////////
+//
+//			if (!features.isEmpty()) {
+//				
+//				ApplicationService.getInstance().getToolTip().clearContent();
+//
+//				List<Label> content = new ArrayList<Label>();
+//
+//				for (Feature feature : features) {
+//					final Label label;
+//					if (feature == null) {
+//						label = new Label(msg.tooManyFeaturesToShow());
+//					} else {
+//						label = new Label(feature.getLabel());
+//					}
+//					label.addStyleName(ApplicationResource.INSTANCE.css().toolTipLine());
+//					content.add(label);
+//				}
+//
+//				// Calculate a position for where to show the tooltip.
+//				int left = RootPanel.get().getAbsoluteLeft() + mapLayoutPanel.getAbsoluteLeft();
+//				int top = RootPanel.get().getAbsoluteTop() + mapLayoutPanel.getAbsoluteTop();
+//				
+//				jsConsoleLog("Content= " + content.get(0).toString());
+//				//jsConsoleLog("Left= " + event.getCoordinate().getX() + 5 + " Top= " + event.getCoordinate().getY() + 5);
+//				// Add some extra pixels to the position of the tooltip so we still can drag the map.
+//				ApplicationService.getInstance().getToolTip().addContentAndShow(
+//						content,
+//						left + (int) event.getCoordinate().getX() + 5,
+//						top + (int) event.getCoordinate().getY() + 5
+//				);
+//
+//			}
+//
+//		}
+//
+//	}
+
+}

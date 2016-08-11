@@ -6,7 +6,7 @@ import org.vrspace.util.*;
 
 public class GenericEntry extends DBObject {
   static java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-
+  public static final String[] _index = { "stationId", "time", "gpsTime", "can1", "can2", "can3", "can4", "can5" };
 	public String stationId;
 	public Date time = new Date();
 	public float can1;
