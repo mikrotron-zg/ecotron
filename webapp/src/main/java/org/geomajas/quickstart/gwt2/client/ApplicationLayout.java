@@ -11,52 +11,29 @@
 package org.geomajas.quickstart.gwt2.client;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.MouseOutEvent;
-import com.google.gwt.event.dom.client.MouseOutHandler;
-import com.google.gwt.event.dom.client.MouseOverEvent;
-import com.google.gwt.event.dom.client.MouseOverHandler;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.DomEvent;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.ResizeComposite;
-import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimpleLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.geomajas.configuration.LayerInfo;
 import org.geomajas.configuration.client.ClientVectorLayerInfo;
 import org.geomajas.geometry.Coordinate;
-import org.geomajas.geometry.service.WktException;
-import org.geomajas.geometry.service.WktService;
-import org.geomajas.gwt.client.util.Dom;
 import org.geomajas.gwt2.client.GeomajasImpl;
 import org.geomajas.gwt2.client.GeomajasServerExtension;
 import org.geomajas.gwt2.client.event.MapInitializationEvent;
 import org.geomajas.gwt2.client.event.MapInitializationHandler;
 import org.geomajas.gwt2.client.gfx.VectorContainer;
 import org.geomajas.gwt2.client.map.MapPresenter;
-import org.geomajas.gwt2.client.map.feature.Feature;
 import org.geomajas.gwt2.client.map.layer.VectorServerLayerImpl;
 import org.geomajas.gwt2.client.map.layer.tile.TileConfiguration;
 import org.geomajas.gwt2.client.widget.MapLayoutPanel;
 import org.geomajas.gwt2.plugin.tilebasedlayer.client.TileBasedLayerClient;
 import org.geomajas.gwt2.plugin.tilebasedlayer.client.layer.OsmLayer;
-import org.geomajas.quickstart.gwt2.client.controller.feature.controller.FeatureMouseOverEvent;
-import org.geomajas.quickstart.gwt2.client.controller.feature.controller.FeatureMouseOverHandler;
 import org.geomajas.quickstart.gwt2.client.i18n.ApplicationMessages;
 import org.geomajas.quickstart.gwt2.client.resource.ApplicationResource;
 import org.vaadin.gwtgraphics.client.VectorObject;
-import org.vaadin.gwtgraphics.client.shape.Circle;
-
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -64,9 +41,7 @@ import java.util.List;
  */
 public class ApplicationLayout extends ResizeComposite {
 
-	//TODO: hold stationId,VectorObject map of all objects
-	private VectorObject mikrotron;
-	private VectorObject veta;
+	private StationManager stations;
 	
 	private static final int TILE_DIMENSION = 256;
 	private static final int MAX_ZOOM_LEVELS = 19;
@@ -76,7 +51,8 @@ public class ApplicationLayout extends ResizeComposite {
 	private final MapPresenter mapPresenter;
 	private final MapLayoutPanel mapLayoutPanel;
 	private List<Double> resolutions;
-
+	private VectorContainer vContainer;
+	
 	/**
 	 * UI binder interface for this layout.
 	 */
@@ -165,17 +141,10 @@ public class ApplicationLayout extends ResizeComposite {
 		mapPresenter.getLayersModel().moveLayer(osmLayer, 0);
 		
 		//addDemoLayer();
+		vContainer = mapPresenter.getContainerManager().addWorldContainer();
 
-		//add objects to Map
-		//Mikrotron
-		mikrotron = getVectorObject(new Coordinate(15.928245, 45.789566), "Mikrotron d.o.o.");
-		addObject(mikrotron);
-		jsConsoleLog("Added Mikrotron to map!");
-		//VETA
-		veta = getVectorObject(new Coordinate(15.537470, 45.460168), "VETA d.o.o.");
-		addObject(veta);
-		jsConsoleLog("Added VETA to map!");
-		
+		stations = new StationManager(this);
+		stations.init();
 	}
 
 	private void addDemoLayer(){
@@ -189,76 +158,12 @@ public class ApplicationLayout extends ResizeComposite {
 		
 	}
 	
-	private VectorObject getVectorObject(Coordinate coordinate, String title){
-		
-		try {
-			final VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
-					WktService.toGeometry(coordinatePointToString(coordinate)));
-			vObject.setTitle(title);
-			vObject.addDomHandler(new MouseOverHandler() {
-	            @Override
-	            public void onMouseOver(MouseOverEvent e) {
-	            	jsConsoleLog("Mouse over " + e.getSource().toString());
-	            	ApplicationService.getInstance().getToolTip().clearContent();
-					List<Label> content = new ArrayList<Label>();
-					final Label label = new Label(((Circle)e.getSource()).getElement().getAttribute("title"));
-					label.addStyleName(ApplicationResource.INSTANCE.css().toolTipLine());
-					content.add(label);
-					ApplicationService.getInstance().getToolTip().addContentAndShow(
-							content, e.getClientX() + 5, e.getClientY() + 5);
-	            }
-	        }, MouseOverEvent.getType());
-			
-			vObject.addDomHandler(new MouseOutHandler() {
-	            @Override
-	            public void onMouseOut(MouseOutEvent event) {
-	            	ApplicationService.getInstance().getToolTip().hide();
-	            }
-	        }, MouseOutEvent.getType());
-			
-			vObject.addDomHandler(new ClickHandler(){
-				@Override
-				public void onClick(ClickEvent e) {
-					String name = ((Circle)e.getSource()).getElement().getAttribute("title");
-					String stationId = "KarlovacTest";
-					if ( name.startsWith("Mikrotron")) stationId = "alfa";
-					DemoDialogBox popup = new DemoDialogBox("Stanica: " + name);
-					//popup.setText("Detaljni podaci");
-//				 	popup.setWidget(new Label("Stanica: " + 
-//		 			((Circle)e.getSource()).getElement().getAttribute("title") + 
-//		 			"\n\rZadnje očitanje:" + new Date().toString()));
-				 	//popup.center();
-					popup.writeContent("Zadnje očitanje:");
-					popup.center();
-				 	popup.show();
-				 	FetchRequest fetch = new FetchRequest(stationId, vObject, popup);
-				 	try {
-						fetch.send();
-					} catch (RequestException re) {
-						popup.writeContent("Error:  " + re);
-						re.printStackTrace();
-					}
-				 	ApplicationService.getInstance().getToolTip().hide();
-				}
-			}, ClickEvent.getType());
-			
-			return vObject;
-		} catch (WktException e) {
-			return null;
-		}
-		
-	}
-	
-	private void addObject(VectorObject vObject){
+	public void addObject(VectorObject vObject){
 
-		VectorContainer vContainer = mapPresenter.getContainerManager().addWorldContainer();
-		
 		//add graphic element
 		GeomajasImpl.getInstance().getGfxUtil().applyFill(vObject, "#FF0000", 0.8);
 		GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#C00000", 1.0, 2, null);
 		
-
-
 //		vObject.addMouseOverHandler(new MouseOverHandler(){
 //
 //			@Override
@@ -272,36 +177,6 @@ public class ApplicationLayout extends ResizeComposite {
 
 	}
 	
-	private String coordinatePointToString(Coordinate point){
-		point = toProjection(point);
-		return "POINT (" + point.getX() + " " + point.getY() + ")";
-	}
-	
-	private Coordinate toProjection(Coordinate point){
-
-//	    CHECKME Can't use this code on client side
-//		try {
-//			GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-//			CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:4326");
-//			CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:3857");
-//			MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS, false);
-//			Point temp = (Point) JTS.transform(geometryFactory.createPoint(new com.vividsolutions.jts.geom.Coordinate(
-//					point.getX(), point.getY())), transform);
-//			return new Coordinate(temp.getX(), temp.getY());
-//		} catch (NoSuchAuthorityCodeException e) {
-//			//quiet quit
-//		} catch (FactoryException e) {
-//			//quiet quit
-//		} catch (TransformException e) {
-//			//quiet quit
-//		}
-
-		double x = point.getX() * 20037508.34 / 180;
-		double y = Math.log(Math.tan((90 + point.getY()) * Math.PI / 360)) / (Math.PI / 180);
-		y *= 20037508.34 / 180;
-		return new Coordinate(x, y);
-	}
-	
 	/**
 	 * Generate a list of resolutions for the available zoom levels.
 	 */
@@ -312,7 +187,7 @@ public class ApplicationLayout extends ResizeComposite {
 		}
 	}
 	
-	native void jsConsoleLog(String message) /*-{
+	static native void jsConsoleLog(String message) /*-{
     try {
         console.log(message);
     } catch (e) {

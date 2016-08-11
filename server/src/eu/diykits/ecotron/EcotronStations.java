@@ -14,6 +14,7 @@ public class EcotronStations extends EcotronServer {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     Logger.logDebug("Request received: " + request.getRequestURL());
     response.setContentType("text/plain");
+    response.setHeader("Access-Control-Allow-Origin","*");
 
     PrintWriter out = response.getWriter();
     try {

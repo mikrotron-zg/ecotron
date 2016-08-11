@@ -11,19 +11,38 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONValue;
+import com.google.gwt.user.client.ui.DialogBox;
 
 public class FetchRequest extends RequestBuilder implements RequestCallback {
 	static String urlBase = "http://www.mikrotron.hr/ecotronserver/last?";
 	DemoDialogBox dlg;
 	VectorObject vObj;
+	StationManager sm;
+	
     Double longitude;
     Double latitude;
+    Float can1;
+    Float can2;
+    Float can3;
+    Float can4;
+    Float can5;
+    Float temp;
+    String time;
+    String gpsTime;
+    String stationId;
     
 	public FetchRequest(String stationId, VectorObject vObj, DemoDialogBox dlg) {
 		super("GET", urlBase+"stationId="+stationId);
 		this.dlg = dlg;
 		this.vObj = vObj;
 		setCallback(this);
+		this.stationId = stationId;
+	}
+	public FetchRequest(String stationId, StationManager sm ) {
+		super("GET", urlBase+"stationId="+stationId);
+		setCallback(this);
+		this.stationId = stationId;
+		this.sm = sm;
 	}
 	@Override
 	public void onResponseReceived(Request request, Response response) {
@@ -42,21 +61,32 @@ public class FetchRequest extends RequestBuilder implements RequestCallback {
 						latitude = new Double(val.toString());
 					} else if ( "gpsLongitude".equals(key)) {
 						longitude = new Double(val.toString());
+					} else if ( "can1".equals(key)) {
+						can1 = new Float(val.toString());
+					} else if ( "can2".equals(key)) {
+						can2 = new Float(val.toString());
+					} else if ( "can3".equals(key)) {
+						can3 = new Float(val.toString());
+					} else if ( "can4".equals(key)) {
+						can4 = new Float(val.toString());
+					} else if ( "can5".equals(key)) {
+						can5 = new Float(val.toString());
+					} else if ( "temp".equals(key)) {
+						temp = new Float(val.toString());
+					} else if ( "gpsTime".equals(key)) {
+						gpsTime = val.toString();
+					} else if ( "time".equals(key)) {
+						time = val.toString();
 					}
 				}
 			}
-			updateCoordinates();
+			if ( vObj == null && sm != null ) {
+				// create vector object from parsed data
+				sm.addStation(stationId, longitude, latitude);
+				ApplicationLayout.jsConsoleLog("Station "+stationId+" added at "+longitude+","+latitude);
+			}
 		} else {
 			if ( dlg != null ) dlg.writeContent("ERROR "+response.getStatusCode()+": "+response.getStatusText());
-		}
-	}
-    /** called from http callback, after all parameters have been written */
-	public void updateCoordinates() {
-		if ( longitude != null && latitude != null ) {
-			// TODO: verify and recalculate as necessary! 
-			Double deltaX = new Double(longitude);
-			Double deltaY = new Double(latitude);
-			//if ( vObj != null ) vObj.setTranslation(deltaX,deltaY);
 		}
 	}
 	@Override
