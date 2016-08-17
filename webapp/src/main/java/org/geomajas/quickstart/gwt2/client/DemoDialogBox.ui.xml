@@ -16,18 +16,20 @@
     <g:HTMLPanel>
     	
     	<p>
-   		<div><label ui:field='dialogContent'/></div>
-   		<div>Mjerna stanica <label ui:field='stationId'/></div>
+   		<div>Mjerna stanica <b><label ui:field='stationId'/></b></div>
    		<br/>
-   		<div>Popunjenost kontejnera: </div>
-   		<div><label ui:field='can1'/></div>
-   		<div><label ui:field='can2'/></div>
-   		<div><label ui:field='can3'/></div>
-   		<div><label ui:field='can4'/></div>
-   		<div><label ui:field='can5'/></div>
-   		<br/>
+   		<div><i><label ui:field='dialogContent'/></i></div>
    		<div>Vrijeme: <label ui:field='time'/></div>
    		<div>GPS Vrijeme: <label ui:field='gpsTime'/></div>
+   		<br/>
+   		<div>Popunjenost kontejnera: </div>
+   		<br/>
+   		<div>Frakcija 1: <label ui:field='can1'/></div>
+   		<div>Frakcija 2: <label ui:field='can2'/></div>
+   		<div>Frakcija 3: <label ui:field='can3'/></div>
+   		<div>Frakcija 4: <label ui:field='can4'/></div>
+   		<div>Frakcija 5: <label ui:field='can5'/></div>
+   		<br/>
    		<div>Temperatura: <label ui:field='temp'/></div>
    		<div>Geografska duljina: <label ui:field='gpsLongitude'/></div>
    		<div>Geografska širina: <label ui:field='gpsLatitude'/></div>
