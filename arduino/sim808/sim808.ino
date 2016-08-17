@@ -49,17 +49,18 @@ void setup(){
 void loop(){
   if(!digitalRead(RI)){
     //ToDo: handle dead module
-    debugPrintln("sim808 not on!");
+    debugPrintln(F("sim808 not on!"));
   }
   debugStream();
   if(!repflag&&digitalRead(RI)&&!MANUAL){
     Serial.println("test "+PIN);
-    if(!simcheck())return;else Serial.println("sim started!");
-    if(!initgprs())return;else Serial.println("gprs started!");
-    if(!setupgprs())return;else Serial.println("gprs configured!");
+    if(!simcheck())return;else Serial.println(F("sim started!"));
+    if(!initgprs())return;else Serial.println(F("gprs started!"));
+    if(!setupgprs())return;else Serial.println(F("gprs configured!"));
     repflag=true;
   }
   if(repflag){
+    checkResp(F("at+cbc"),30,1500,F("OK"));
     delay(5000);
     report();
     delay(5000);
