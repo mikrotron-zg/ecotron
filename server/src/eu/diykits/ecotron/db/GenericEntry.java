@@ -63,6 +63,9 @@ public class GenericEntry extends DBObject {
 	public float gpsHdop;
 	public float gpsPdop;
 	public float gpsVdop;
+	/** battery level info */
+	public String batInfo;
+
 	public GenericEntry() {}
 	public GenericEntry(Map<String,String[]> params) {
     for ( String key: params.keySet() ) {
