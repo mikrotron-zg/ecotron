@@ -1,0 +1,4 @@
+# exclude unnecessary and backup files
+*.dwg
+*.bak
+*.skb
