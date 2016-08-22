@@ -31,6 +31,8 @@
    		<div>Frakcija 5: <label ui:field='can5'/></div>
    		<br/>
    		<div>Temperatura: <label ui:field='temp'/></div>
+   		<div>Status baterije: <label ui:field='batInfo'/></div>
+   		<br/>
    		<div>Geografska duljina: <label ui:field='gpsLongitude'/></div>
    		<div>Geografska širina: <label ui:field='gpsLatitude'/></div>
    		</p>

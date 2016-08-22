@@ -34,6 +34,7 @@ public class DemoDialogBox extends DialogBox implements ClickHandler {
     @UiField LabelElement temp;
     @UiField LabelElement gpsTime;
     @UiField LabelElement time;
+    @UiField LabelElement batInfo;
     @UiField Button button;
     
     public DemoDialogBox(String dialogBoxTitle) {
@@ -71,6 +72,8 @@ public class DemoDialogBox extends DialogBox implements ClickHandler {
     		time.setInnerText(val);
     	} else if ( "stationId".equals(field)) {
     		stationId.setInnerText(val);
+    	} else if ( "batInfo".equals(field)) {
+    		batInfo.setInnerText(parseBatInfo(val));
     	}
     }
     
@@ -81,6 +84,7 @@ public class DemoDialogBox extends DialogBox implements ClickHandler {
     	final double full = 40;
     	double measured = Double.parseDouble(val);
         
+    	if (measured == -1) return "Nema podatka";
     	if (measured <= (full+5)) return "100 %";
     	if (measured >= (empty-5)) return "0 %";
     	
@@ -88,6 +92,27 @@ public class DemoDialogBox extends DialogBox implements ClickHandler {
     	int rounded = ((int)calc*100)/10;
     	
     	return rounded + " %";
+    }
+    
+    private String parseBatInfo(String val){
+    	val = val.substring(1, val.length()-1);
+    	String split[] = val.split(",");
+    	if (split.length != 3) return val;
+    	
+    	String res;
+    	try{
+    	switch (Integer.parseInt(split[0])){
+    		case 0: res =" Ne puni se, "; break;
+    		case 1: res = "Puni se, "; break;
+    		case 2: res = "Napunjena, "; break;
+    		default: res = "Status nepoznat, ";
+    	}
+    	} catch (NumberFormatException e){
+    		res="Status nepoznat, ";
+    	}
+    	res += "napunjenost " + split[1] + "%, ";
+    	res += "napon " + split[2] + " mV.";
+    	return res;
     }
     
 	@Override

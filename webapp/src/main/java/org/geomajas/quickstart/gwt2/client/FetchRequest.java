@@ -30,6 +30,7 @@ public class FetchRequest extends RequestBuilder implements RequestCallback {
     String time;
     String gpsTime;
     String stationId;
+    String batInfo;
     
 	public FetchRequest(String stationId, VectorObject vObj, DemoDialogBox dlg) {
 		super("GET", urlBase+"stationId="+stationId);
@@ -77,6 +78,8 @@ public class FetchRequest extends RequestBuilder implements RequestCallback {
 						gpsTime = val.toString();
 					} else if ( "time".equals(key)) {
 						time = val.toString();
+					} else if ( "batInfo".equals(key)) {
+						batInfo = val.toString();
 					}
 				}
 			}
