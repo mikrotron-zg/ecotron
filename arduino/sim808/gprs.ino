@@ -1,5 +1,8 @@
 boolean initgprs(){
-  if(!regcheck())return false;
+// whole procedure for starting up gprs
+  int errcount=0;
+  while(!regcheck()&&errcount<MAXERRS)errcount++;
+  if(errcount==MAXERRS)return false;
   if(!attcheck())return false;
   if(!shutIP())return false;
   if(!IPstack())return false;
@@ -11,6 +14,7 @@ boolean initgprs(){
 }
 
 boolean setupgprs(){
+// whole procedure for setting gprs up, to be called after initgprs
   if(!contype())return false;
   if(!setapn())return false;
   if(!gprsON())return false;
@@ -19,61 +23,61 @@ boolean setupgprs(){
 }
 
 boolean contype(){
-  debugPrint("contype ");
-  return checkResp("at+sapbr=3,1,\"Contype\",\"GPRS\"",20,1000,"OK");
+  debugPrint(F("contype "));
+  return checkResp(F("at+sapbr=3,1,\"Contype\",\"GPRS\""),20,1000,ok);
 }
 
 boolean setapn(){
-  debugPrint("set apn ");
-  return checkResp("at+sapbr=3,1,\"APN\",\""+APN+"\"",20,1000,"OK");
+  debugPrint(F("set apn "));
+  return checkResp("at+sapbr=3,1,\"APN\",\""+APN+"\"",20,1000,ok);
 }
 
 boolean gprsON(){
-  debugPrint("gprs ON ");
-  return checkResp("at+sapbr=1,1",20,1000,"OK");
+  debugPrint(F("gprs ON "));
+  return checkResp(F("at+sapbr=1,1"),20,1000,ok);
 }
 
 boolean checkgprs(){
-  debugPrint("settings ");
-  return checkResp("at+sapbr=2,1",60,1000,"OK");
+  debugPrint(F("settings "));
+  return checkResp(F("at+sapbr=2,1"),60,1000,ok);
 }
 
 boolean regcheck(){
-  debugPrint("net reg ");
-  return checkResp("at+creg?",40,2000,"0,1");
+  debugPrint(F("net reg "));
+  return checkResp(F("at+creg?"),40,4000,F("0,1"));
 }
 
 boolean attcheck(){
-  debugPrint("gprs attach ");
-  return checkResp("at+cgatt?",40,2000,": 1");
+  debugPrint(F("gprs attach "));
+  return checkResp(F("at+cgatt?"),40,2000,F(": 1"));
 }
 
 boolean shutIP(){
-  debugPrint("IP shut ");
-  return checkResp("at+cipshut",20,1000,"SHUT OK");
+  debugPrint(F("IP shut "));
+  return checkResp(F("at+cipshut"),20,1000,F("SHUT OK"));
 }
 
 boolean IPstack(){
-  debugPrint("IP stat ");
-  return checkResp("at+cipstatus",30,1000,"IP INITIAL");
+  debugPrint(F("IP stat "));
+  return checkResp(F("at+cipstatus"),30,1000,F("IP INITIAL"));
 }
 
 boolean nomux(){
-  debugPrint("mux off ");
-  return checkResp("at+cipmux=0",20,1000,"OK");
+  debugPrint(F("mux off "));
+  return checkResp(F("at+cipmux=0"),20,1000,ok);
 }
 
 boolean nettask(){
-  debugPrint("network ");
-  return checkResp("at+cstt=\""+APN+"\"",60,10000,"OK");
+  debugPrint(F("network "));
+  return checkResp("at+cstt=\""+APN+"\"",60,10000,ok);
 }
 
 boolean linkgprs(){
-  debugPrint("gprs link ");
-  return checkResp("at+ciicr",60,10000,"OK");
+  debugPrint(F("gprs link "));
+  return checkResp(F("at+ciicr"),60,10000,ok);
 }
 
 boolean checkIP(){
-  debugPrint("IP ");
-  return !checkResp("at+cifsr",20,5000,"ERROR");
+  debugPrint(F("IP "));
+  return !checkResp(F("at+cifsr"),20,5000,F("ERROR"));
 }
