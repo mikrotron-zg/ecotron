@@ -1,4 +1,5 @@
 boolean report(){
+// reports state to server - full procedure
   for(int i=0;i<5;i++){
     getmeasure(i,10);
     debugPrintln(String(i)+": "+String(states[i]));
@@ -15,34 +16,39 @@ boolean report(){
 }
 
 boolean initHTTP(){
-  debugPrint("HTTP start ");
-  return checkResp("at+httpinit",20,1000,"OK");
+  debugPrint(F("HTTP start "));
+  return checkResp(F("at+httpinit"),20,1000,ok);
 }
 
 boolean setCID(){
-  debugPrint("CID ");
-  return checkResp("at+httppara=\"CID\",1",20,1000,"OK");
+  debugPrint(F("CID "));
+  return checkResp(F("at+httppara=\"CID\",1"),20,1000,ok);
 }
 
 boolean setURL(){
+// streams a very long url which contains all the report data
+// url can't be held in memory entirely so it is streamed to the sim808 in pieces
   String cmd="at+httppara=\"URL\",\"";
+  String bat=getBatStat();
   streamString(cmd);
   streamString(SERVER);
   streamString(gpsp);
   streamString(gpsdata);
+  streamString(batp);
+  streamString(bat);
   for(int i=0;i<5;i++){
     streamString("&can"+String(i+1)+"="+String(states[i]));
   }
   streamString("&temp="+String(getT()));
-  return checkResp("\"",20,3000,"OK");
+  return checkResp("\"",20,3000,ok);
 }
 
 boolean GETaction(){
-  debugPrint("GET ");
-  return checkResp("at+httpaction=0",40,5000,"OK");
+  debugPrint(F("GET "));
+  return checkResp(F("at+httpaction=0"),40,5000,ok);
 }
 
 boolean stopHTTP(){
-  debugPrint("HTTP stop ");
-  return checkResp("at+httpterm",20,1000,"OK");
+  debugPrint(F("HTTP stop "));
+  return checkResp(F("at+httpterm"),20,1000,ok);
 }

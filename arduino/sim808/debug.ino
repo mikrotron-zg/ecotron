@@ -7,6 +7,7 @@ void debugPrint(String msg){
 }
 
 void debugStream(){
+// pass serial communication to and from sim808 for direct AT command entry
   if(!DEBUG)return;
   if(sim808.available())Serial.write(sim808.read());
   if(Serial.available()){ 

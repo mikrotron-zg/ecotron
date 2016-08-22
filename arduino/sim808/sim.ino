@@ -1,4 +1,5 @@
 boolean simcheck(){
+// full process of checking if the module is good to go and unlocking sim card
   if(!(ATcheck()&&echocheck()))return false;
   int rdy=simStatecode();
   if(!rdy)return true;
@@ -7,16 +8,16 @@ boolean simcheck(){
 }
 
 boolean ATcheck(){
-  debugPrint("AT ");
-  return checkResp("at",20,1000,"OK");
+  debugPrint(F("AT "));
+  return checkResp(F("at"),20,1000,ok);
 }
 
 boolean echocheck(){
-  debugPrint("echo ");
-  return checkResp("ate0",20,1000,"OK");
+  debugPrint(F("echo "));
+  return checkResp(F("ate0"),20,1000,ok);
 }
 
 boolean unlocksim(){
-  debugPrint("unlock ");
-  return checkResp("at+cpin="+PIN,60,5000,"READY");
+  debugPrint(F("unlock "));
+  return checkResp("at+cpin="+PIN,60,5000,F("READY"));
 }
