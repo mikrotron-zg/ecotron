@@ -45,8 +45,8 @@ public class StationManager {
 		//layout.addObject(mikrotron);
 		
 		//VETA
-		veta = getVectorObject(new Coordinate(15.537470, 45.460168), "KarlovacTest", "VETA d.o.o.");
-		layout.addObject(veta);
+		//veta = getVectorObject(new Coordinate(15.537470, 45.460168), "KarlovacTest", "VETA d.o.o.");
+		//layout.addObject(veta);
 		
 		//TODO: fetch station list here
 		ListRequest list = new ListRequest(this);

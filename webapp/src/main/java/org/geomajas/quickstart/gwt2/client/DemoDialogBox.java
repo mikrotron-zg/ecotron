@@ -82,8 +82,13 @@ public class DemoDialogBox extends DialogBox implements ClickHandler {
     	//FIXME exact lengths will be known after sensors are mounted
     	final double empty = 120;
     	final double full = 40;
-    	double measured = Double.parseDouble(val);
-        
+    	double measured;
+    	
+    	try{
+    		measured = Double.parseDouble(val);
+    	} catch (NumberFormatException e){
+    		return "Nepoznati oblik podatka";
+    	}
     	if (measured == -1) return "Nema podatka";
     	if (measured <= (full+5)) return "100 %";
     	if (measured >= (empty-5)) return "0 %";
