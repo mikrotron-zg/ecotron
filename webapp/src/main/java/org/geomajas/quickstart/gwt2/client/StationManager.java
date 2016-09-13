@@ -58,12 +58,12 @@ public class StationManager {
 		}
 		
 	}
-	private VectorObject getVectorObject(Coordinate coordinate, final String stationId, String title){
+	private VectorObject getVectorObject(Coordinate coordinate, final String stationId, String title, String color){
 		
 		try {
 			final VectorObject vObject = GeomajasImpl.getInstance().getGfxUtil().toShape(
 					WktService.toGeometry(coordinatePointToString(coordinate)));
-			GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, "#C00000", 1, 10, null);
+			GeomajasImpl.getInstance().getGfxUtil().applyStroke(vObject, color, 1, 10, null);
 			coordinate = toProjection(coordinate);
 			final VectorObject text = new Text(coordinate.getX(), coordinate.getY(), title);
 			text.setTranslation(20, 0);
@@ -190,8 +190,8 @@ public class StationManager {
 			// TODO Auto-generated method stub
 		}
 	}
-	public void addStation(String stationId, Double longitude, Double latitude ) {
-		VectorObject station = getVectorObject(new Coordinate(longitude, latitude), stationId, stationId);
+	public void addStation(String stationId, Double longitude, Double latitude, String color ) {
+		VectorObject station = getVectorObject(new Coordinate(longitude, latitude), stationId, stationId, color);
 		stations.put(stationId, station);
 		layout.addObject(station);
 	}
