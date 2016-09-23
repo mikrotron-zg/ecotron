@@ -8,9 +8,9 @@ void getGPSinfo(){
     gpsdata=parseinfo();
     debugPrintln("bot "+ret);
     delay(500);
-  }while(gpsdata[0]=='0');
+  }while(gpsdata[2]!='1');
   debugPrint(F("GPS off "));
-  if(!checkResp(F("at+cgnspwr=1"),20,1000,ok))Serial.println(F("GPS PWR ERR"));
+  if(!checkResp(F("at+cgnspwr=1"),20,1000,ok))debugPrintln(F("GPS PWR ERR"));
 }
 
 String parseinfo(){

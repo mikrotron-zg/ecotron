@@ -1,13 +1,17 @@
 void pinsetup(){
+  PORTD |= 0x04; 
+  DDRD &=~ 0x04;
   pinMode(PWR,OUTPUT);
   pinMode(RI,INPUT);
   pinMode(DTR,OUTPUT);
-  pinMode(GO,INPUT_PULLUP);
-  for(int i=0;i<5;i++){
+  int k=0||DEBUG;
+  for(int i=k;i<5;i++){
     pinMode(marcos[i],OUTPUT);
     digitalWrite(marcos[i],LOW);
     pinMode(polos[i],INPUT);
   }
+  pinMode(2,INPUT_PULLUP);
+  pinMode(3,OUTPUT);
 }
 
 void sim808su(){
@@ -50,9 +54,18 @@ void sim808off(){
 
 void sim808wu(){
   digitalWrite(DTR,LOW);
-  delay(54);
+  delay(100);
 }
 
 void sim808sleep(){
   digitalWrite(DTR,HIGH);
+}
+
+void ssOn(){
+  digitalWrite(3,LOW);
+  delay(100);
+}
+
+void ssOff(){
+  digitalWrite(3,HIGH);
 }
