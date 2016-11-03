@@ -17,3 +17,31 @@ void debugStream(){
     sim808.println();
   }
 }
+
+void debugHCSR04(){
+// measure and report HCSR04 readings
+  int k=0||DEBUG;
+  ssOn();
+  for(int i=k;i<5;i++){
+    getmeasure(i,5);
+    Serial.println(String(i)+": "+String(states[i]));
+  }
+  ssOff();
+}
+
+void dumpNow(){
+// read and report RTC date-time
+  dtbuff = rtc.now();
+  Serial.print(dtbuff.year(), DEC);
+  Serial.print('/');
+  Serial.print(dtbuff.month(), DEC);
+  Serial.print('/');
+  Serial.print(dtbuff.date(), DEC);
+  Serial.print(' ');
+  Serial.print(dtbuff.hour(), DEC);
+  Serial.print(':');
+  Serial.print(dtbuff.minute(), DEC);
+  Serial.print(':');
+  Serial.print(dtbuff.second(), DEC);
+  Serial.println();
+}

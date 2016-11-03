@@ -1,9 +1,5 @@
 boolean report(){
 // reports state to server - full procedure
-  for(int i=0;i<5;i++){
-    getmeasure(i,10);
-    debugPrintln(String(i)+": "+String(states[i]));
-  }
   if(!initHTTP()){stopHTTP();return false;}
   if(!setCID())return false;
   getGPSinfo();
@@ -36,7 +32,7 @@ boolean setURL(){
   streamString(gpsdata);
   streamString(batp);
   streamString(bat);
-  for(int i=0;i<5;i++){
+  for(int i=DEBUG;i<5;i++){
     streamString("&can"+String(i+1)+"="+String(states[i]));
   }
   streamString("&temp="+String(getT()));
