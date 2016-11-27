@@ -5,9 +5,8 @@ public class DemoUtils {
 
 	public static String percentage(String val){
     	
-    	//FIXME exact lengths will be known after sensors are mounted
-    	final double empty = 120;
-    	final double full = 40;
+    	final double empty = 105;
+    	final double full = 25;
     	double measured;
     	
     	try{
