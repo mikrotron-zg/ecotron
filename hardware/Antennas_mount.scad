@@ -4,21 +4,21 @@ ex=0.1;         //utility
 
 mount_thickness=5;
 mount_width=12;
-mount_length=50;
-mount_hole_x=30;
+mount_length=30;
+mount_hole_x=10;
 mount_hole_dia=2.5;
 mount_hole_head_dia=6;
 mount_hole_head_height=3;
-GSM_mount_height=6;
+GSM_mount_height=60;
 GSM_mount_length=20;
 GSM_mount_hole_dia=8;
-GPS_mount_height=30;
+GSM_mount_hole_height=50;
+GPS_mount_height=35;
 GPS_mount_width=40;
 GPS_mount_length=45;
 $fn=40;
 
-// translate([x, y, z]) cube([x, y, z]);
-
+//start
 rotate([90, 0, 0]) antennas_mount();
 
 module antennas_mount(){
@@ -38,11 +38,13 @@ module mount_base(){
 }
 
 module GSM_mount(){
-    cube([mount_thickness, mount_width, GSM_mount_height+mount_thickness]);
-    translate([-GSM_mount_length, 0, GSM_mount_height]) difference(){
-        cube([GSM_mount_length, mount_width, mount_thickness]);
-        translate([GSM_mount_length/2, mount_width/2, -ex]) 
-            cylinder(h=mount_thickness+2*ex, d=GSM_mount_hole_dia);
+    difference(){
+        cube([mount_thickness, mount_width, GSM_mount_height]);
+        translate([-ex, mount_width/2, GSM_mount_hole_height]) 
+            rotate([0, 90, 0]) union(){
+                cylinder(h=mount_thickness+2*ex, d=GSM_mount_hole_dia);
+                cylinder(h=mount_thickness-3+ex, d=GSM_mount_hole_dia+2);
+            }
     }
 }
 
