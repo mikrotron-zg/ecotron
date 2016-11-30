@@ -55,10 +55,14 @@ void sim808off(){
 void sim808wu(){
   digitalWrite(DTR,LOW);
   delay(100);
+  digitalWrite(DTR,HIGH);
+  // TODO: AT+CFUN=1 (full functionality)
 }
 
 void sim808sleep(){
-  digitalWrite(DTR,HIGH);
+  digitalWrite(DTR,HIGH); // TODO: remove
+  // TODO: AT+CFUN=0 (deep sleep)
+  // TODO: AT+CSCLK=1
 }
 
 void ssOn(){

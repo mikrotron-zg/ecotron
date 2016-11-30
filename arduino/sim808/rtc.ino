@@ -36,7 +36,7 @@ void standardRTCSetup(){
 
 void hibernate(){
   setAlarmClock();
-  sim808off();
+  //sim808off(); // this may put all SIM808 pins to LOW, while ATMEGA pins remain HIGH -> power drain!
   ssOff();
   dtbuff=rtc.now();
   hflag=false;
