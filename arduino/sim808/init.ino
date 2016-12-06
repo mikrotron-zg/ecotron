@@ -1,17 +1,34 @@
 void pinsetup(){
+  // full pin configuration
   PORTD |= 0x04; 
   DDRD &=~ 0x04;
   pinMode(PWR,OUTPUT);
   pinMode(RI,INPUT);
   pinMode(DTR,OUTPUT);
+  hcopen();
+  pinMode(2,INPUT_PULLUP);
+  pinMode(9,OUTPUT);
+}
+
+void hcshut(){
+  // make data pins behave while sleeping
+  int k=0||DEBUG;
+  for(int i=k;i<5;i++){
+    pinMode(marcos[i],OUTPUT);
+    digitalWrite(marcos[i],LOW);
+    pinMode(polos[i],OUTPUT);
+    digitalWrite(marcos[i],LOW);
+  }
+}
+
+void hcopen(){
+  // make data pins misbehave again
   int k=0||DEBUG;
   for(int i=k;i<5;i++){
     pinMode(marcos[i],OUTPUT);
     digitalWrite(marcos[i],LOW);
     pinMode(polos[i],INPUT);
   }
-  pinMode(2,INPUT_PULLUP);
-  pinMode(3,OUTPUT);
 }
 
 void sim808su(){
@@ -55,21 +72,18 @@ void sim808off(){
 void sim808wu(){
   digitalWrite(DTR,LOW);
   delay(100);
-  digitalWrite(DTR,HIGH);
-  // TODO: AT+CFUN=1 (full functionality)
 }
 
 void sim808sleep(){
-  digitalWrite(DTR,HIGH); // TODO: remove
-  // TODO: AT+CFUN=0 (deep sleep)
-  // TODO: AT+CSCLK=1
+  delay(100);
+  digitalWrite(DTR,HIGH);
 }
 
 void ssOn(){
-  digitalWrite(3,LOW);
+  digitalWrite(9,HIGH);
   delay(100);
 }
 
 void ssOff(){
-  digitalWrite(3,HIGH);
+  digitalWrite(9,LOW);
 }
