@@ -1,5 +1,6 @@
 void getmeasure(int index,int goods){
 // measuring the distance as seen by a HC-SR04 sensor - deals with faulty measurements by demanding an amount of believeable ones, returns average
+// a believeable measurement is set to anywhere between 0cm and 5m - default operation range of the sensor
   debugPrintln("can "+String(index));
   unsigned long timeout=millis();
   int good=0;

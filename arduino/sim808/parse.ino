@@ -1,5 +1,5 @@
 void flushsim(){
-// discard whatever's waiting in serial
+// discard whatever's waiting in serial - deals with trash and unsolicited messages
   debugPrintln("flushing "+String(sim808.available())+" bytes");
   while(sim808.available())sim808.read();
   return;
@@ -40,7 +40,9 @@ boolean checkResp(String cmd, int len, int timeout, String okflag){
 
 void streamString(String s){
 // sends a string from memory to the sim808 char by char
-  for(int i=0;i<s.length();i++)sim808.write(s[i]);
+  for(int i=0;i<s.length();i++){
+    sim808.write(s[i]);
+  }
 }
 
 int simStatecode(){

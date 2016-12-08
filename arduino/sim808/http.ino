@@ -2,6 +2,7 @@ boolean report(){
 // reports state to server - full procedure
   if(!initHTTP()){stopHTTP();return false;}
   if(!setCID())return false;
+  if(!setREDIR())return false;
   getGPSinfo();
   boolean flag=true;
   if(!setURL())flag=false;
@@ -19,6 +20,11 @@ boolean initHTTP(){
 boolean setCID(){
   debugPrint(F("CID "));
   return checkResp(F("at+httppara=\"CID\",1"),20,1000,ok);
+}
+
+boolean setREDIR(){
+  debugPrint(F("REDIR "));
+  return checkResp(F("at+httppara=\"REDIR\",0"),20,1000,ok);
 }
 
 boolean setURL(){
@@ -41,7 +47,7 @@ boolean setURL(){
 
 boolean GETaction(){
   debugPrint(F("GET "));
-  return checkResp(F("at+httpaction=0"),40,5000,ok);
+  return checkResp(F("at+httpaction=0"),40,20000,ok);
 }
 
 boolean stopHTTP(){

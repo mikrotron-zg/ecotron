@@ -20,16 +20,15 @@
 // A1 - P2 - close right 60
 // A2 - M2
 // A3 - P3 - close left 60
-// 9  - M3
+// 3  - M3
 
 // - Assorted
 // A0 - temp. sensor
 // A5 - I2C SDA
 // A4 - I2C SCL
-//  3 - sensor power control
+//  9 - sensor power control
 
 #include <avr/sleep.h>
-#include <avr/power.h>
 #include <avr/power.h>
 #include <SoftwareSerial.h>
 #include <Wire.h>
@@ -37,13 +36,13 @@
 #include "SeeeduinoStalker.h"
 
 // runtime options
-#define DEBUG false   // run in debug mode
-#define MANUAL false  // manual control mode
-#define CHECKHC false // sensor checking loop
-#define CHECKRTC false// rtc checking loop
-#define HCTO 15000    // HC-SR40 distance sensor timeout
-#define SIMTO 60000   // sim808 general timeout
-#define MAXERRS 5     // consecutive error tolerance
+#define DEBUG true      // run in debug mode
+#define MANUAL false    // manual control mode
+#define CHECKHC false   // sensor checking loop
+#define CHECKRTC false  // rtc checking loop
+#define HCTO 15000      // HC-SR40 distance sensor timeout
+#define SIMTO 60000     // sim808 general timeout
+#define MAXERRS 5       // consecutive error tolerance
 
 // software serial to sim808
 SoftwareSerial sim808(10,8);
@@ -54,6 +53,7 @@ SoftwareSerial sim808(10,8);
 #define DTR 11   // sleep
 
 // stalker & RTC control
+// brown out detection disabling function - copy pasta
 #define sleep_bod_disable() \
 { \
   uint8_t tempreg; \
@@ -82,11 +82,11 @@ double Rval[]={5.301,4.48,3.62};
 double Tval[]={-40,0,50};
 
 // carrier data for GSM network
-String PIN="4448";
-String APN="gprs0.vip.hr";
+String PIN="9709";
+String APN="internet.ht.hr";
 
 // server data
-String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=alfa";
+String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=beta";
 String gpsdata="";
 String gpsp="&gpsInfo=";
 String batp="&batInfo=";
@@ -95,32 +95,49 @@ String batp="&batInfo=";
 String ok="OK";
 
 // HC-SR40 pinout & data
-int marcos[]={1,A2,9,7,5};
+int marcos[]={1,A2,3,7,5};
 int polos[]={0,A1,A3,6,4};
 int states[]={-1,-1,-1,-1,-1};
 
 void setup(){
+  // configure atmega pins
   pinsetup();
+  // set initial send flag (so that device sends when first turned on, for debug purposes)
+  hflag=true;
+  // shut down sensor shield
   ssOff();
+  // start serial in debug mode
   if(DEBUG)Serial.begin(9600);
   delay(500);
+  // loop sensor check on demand
   if(CHECKHC){while(1)debugHCSR04();}
+  // make sure RTC works if device isn't started in manual mode
   if(!checkRTC()&&!MANUAL){debugPrintln(F("RTC DOWN"));while(1);}else{standardRTCSetup();}
+  // loop RTC check on demand
   if(CHECKRTC){while(1)debugRTC();}
+  // open serial to sim808
   sim808.begin(9600);
+  // power sensor shield up
   ssOn();
-  sim808su();            // start up
-  sim808wu();            // wake up
+  // start up sim808
+  sim808su();
+  sim808wu();
 }
 
 void loop(){
 // handle interrupt
   if(hflag&&!MANUAL){
+    // turn stuff on
     ssOn();
+    sim808su();
     sim808wu();
+    // check if sim808 works
     checkModule();
+    // ping trash cans
     updateStates();
+    // ignore SIM connection error and go back to sleep
     if(!connectSIM())return;
+    // report state if connection is successful
     report();
   }
   if(!MANUAL)hibernate();else debugStream();
