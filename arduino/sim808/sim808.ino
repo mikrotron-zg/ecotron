@@ -82,11 +82,12 @@ double Rval[]={5.301,4.48,3.62};
 double Tval[]={-40,0,50};
 
 // carrier data for GSM network
-String PIN="9709";
-String APN="internet.ht.hr";
+String PIN="8251";
+//String APN="internet.ht.hr";
+String APN="mobileinternet.tele2.hr";
 
 // server data
-String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=beta";
+String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=gama";
 String gpsdata="";
 String gpsp="&gpsInfo=";
 String batp="&batInfo=";
@@ -94,9 +95,11 @@ String batp="&batInfo=";
 // generic strings for memory saving
 String ok="OK";
 
-// HC-SR40 pinout & data
-int marcos[]={1,A2,3,7,5};
-int polos[]={0,A1,A3,6,4};
+// HC-SR40 trigger/echo pins and states
+//int marcos[]={1,A2,3,7,5};
+//int polos[]={0,A1,A3,6,4};
+int triggerPins[]={0,A1,3,6,4};
+int echoPins[]={1,A2,A3,7,5};
 int states[]={-1,-1,-1,-1,-1};
 
 void setup(){

@@ -14,10 +14,10 @@ void hcshut(){
   // make data pins behave while sleeping
   int k=0||DEBUG;
   for(int i=k;i<5;i++){
-    pinMode(marcos[i],OUTPUT);
-    digitalWrite(marcos[i],LOW);
-    pinMode(polos[i],OUTPUT);
-    digitalWrite(marcos[i],LOW);
+    pinMode(triggerPins[i],OUTPUT);
+    digitalWrite(triggerPins[i],LOW);
+    pinMode(echoPins[i],OUTPUT);
+    digitalWrite(triggerPins[i],LOW);
   }
 }
 
@@ -25,9 +25,9 @@ void hcopen(){
   // make data pins misbehave again
   int k=0||DEBUG;
   for(int i=k;i<5;i++){
-    pinMode(marcos[i],OUTPUT);
-    digitalWrite(marcos[i],LOW);
-    pinMode(polos[i],INPUT);
+    pinMode(triggerPins[i],OUTPUT);
+    digitalWrite(triggerPins[i],LOW);
+    pinMode(echoPins[i],INPUT);
   }
 }
 
