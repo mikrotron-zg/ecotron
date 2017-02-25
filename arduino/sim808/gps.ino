@@ -1,9 +1,10 @@
 void getGPSinfo(){
-// full procedure for turning gps on, getting data and turning it off again
+  // full procedure for turning gps on, getting data and turning it off again
   debugPrint(F("GPS on "));
   if(!checkResp(F("at+cgnspwr=1"),20,1000,ok))gpsdata="err";
   debugPrint(F("GPS INFO "));
   String ret="0";
+  // TODO: introduce safety timeout here, or GPS may get into endless loop
   do{
     gpsdata=parseinfo();
     debugPrintln("bot "+ret);

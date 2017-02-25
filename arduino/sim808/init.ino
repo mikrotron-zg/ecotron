@@ -12,7 +12,7 @@ void pinsetup(){
 
 void hcshut(){
   // make data pins behave while sleeping
-  int k=0||DEBUG;
+  int k=0; //||DEBUG;
   for(int i=k;i<5;i++){
     pinMode(triggerPins[i],OUTPUT);
     digitalWrite(triggerPins[i],LOW);
@@ -23,7 +23,7 @@ void hcshut(){
 
 void hcopen(){
   // make data pins misbehave again
-  int k=0||DEBUG;
+  int k=0; //||DEBUG;
   for(int i=k;i<5;i++){
     pinMode(triggerPins[i],OUTPUT);
     digitalWrite(triggerPins[i],LOW);

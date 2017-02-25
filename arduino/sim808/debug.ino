@@ -7,7 +7,7 @@ void debugPrint(String msg){
 }
 
 void debugStream(){
-// pass serial communication to and from sim808 for direct AT command entry
+  // pass serial communication to and from sim808 for direct AT command entry
   if(!DEBUG)return;
   if(sim808.available())Serial.write(sim808.read());
   if(Serial.available()){ 
@@ -19,8 +19,8 @@ void debugStream(){
 }
 
 void debugHCSR04(){
-// measure and report HCSR04 readings
-  int k=0||DEBUG;
+  // measure and report HCSR04 readings
+  int k=0; //||DEBUG;
   ssOn();
   for(int i=k;i<5;i++){
     getmeasure(i,5);

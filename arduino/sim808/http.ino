@@ -38,7 +38,8 @@ boolean setURL(){
   streamString(gpsdata);
   streamString(batp);
   streamString(bat);
-  for(int i=DEBUG;i<5;i++){
+  //for(int i=DEBUG;i<5;i++){
+  for(int i=0;i<5;i++){
     streamString("&can"+String(i+1)+"="+String(states[i]));
   }
   streamString("&temp="+String(getT()));

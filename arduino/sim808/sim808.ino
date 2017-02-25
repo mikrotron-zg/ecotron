@@ -82,7 +82,7 @@ double Rval[]={5.301,4.48,3.62};
 double Tval[]={-40,0,50};
 
 // carrier data for GSM network
-String PIN="8251";
+String PIN="8215";
 //String APN="internet.ht.hr";
 String APN="mobileinternet.tele2.hr";
 
@@ -125,10 +125,11 @@ void setup(){
   // start up sim808
   sim808su();
   sim808wu();
+  //if (MANUAL) verboseErrors();
 }
 
 void loop(){
-// handle interrupt
+  // handle interrupt
   if(hflag&&!MANUAL){
     // turn stuff on
     ssOn();

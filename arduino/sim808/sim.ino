@@ -1,9 +1,9 @@
 void checkModule(){
   if(!digitalRead(RI)){
-// if low RI is detected in debug mode, check if it's low because of incoming call signal (120ms down) - if not assume it's off
+    // if low RI is detected in debug mode, check if it's low because of incoming call signal (120ms down) - if not assume it's off
     delay(200);
     if(digitalRead(RI))return;
-// if assumed off, attempt to reboot MAXERRS times - if this fails, brick thyself and wait for a technician to unbrick thine pitiful arse
+    // if assumed off, attempt to reboot MAXERRS times - if this fails, brick thyself and wait for a technician to unbrick thine pitiful arse
     debugPrintln(F("sim808 not on!"));
     int fails=0;
     while(fails<MAXERRS){
@@ -18,6 +18,7 @@ void checkModule(){
 
 boolean simcheck(){
 // full process of checking if the module is good to go and unlocking sim card
+  //if (DEBUG) verboseErrors();
   if(!(ATcheck()&&echocheck()))return false;
   int rdy=simStatecode();
   if(!rdy)return true;
@@ -47,3 +48,8 @@ boolean unlocksim(){
   debugPrint(F("unlock "));
   return checkResp("at+cpin="+PIN,60,5000,F("READY"));
 }
+
+boolean verboseErrors() {
+  return checkResp("at+cmee=2",60,5000,ok);
+}
+
