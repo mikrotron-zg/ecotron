@@ -46,6 +46,9 @@ boolean echocheck(){
 
 boolean unlocksim(){
   debugPrint(F("unlock "));
+  // FIXME: in case SIM has no pin, this produces error
+  // at+cpin? should be tested first; should it return READY, PIN is not required
+  // PIN is required for +CPIN: SIM PIN response
   return checkResp("at+cpin="+PIN,60,5000,F("READY"));
 }
 

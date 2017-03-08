@@ -36,7 +36,7 @@
 #include "SeeeduinoStalker.h"
 
 // runtime options
-#define DEBUG true      // run in debug mode
+#define DEBUG false     // run in debug mode
 #define MANUAL false    // manual control mode
 #define CHECKHC false   // sensor checking loop
 #define CHECKRTC false  // rtc checking loop
@@ -82,12 +82,15 @@ double Rval[]={5.301,4.48,3.62};
 double Tval[]={-40,0,50};
 
 // carrier data for GSM network
-String PIN="8215";
-//String APN="internet.ht.hr";
-String APN="mobileinternet.tele2.hr";
+//String PIN="8215";
+//String PIN="7312";
+String PIN="2147";
+String APN="internet.ht.hr";
+//String APN="mobileinternet.tele2.hr";
+//String APN="web.htgprs";
 
 // server data
-String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=gama";
+String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=delta";
 String gpsdata="";
 String gpsp="&gpsInfo=";
 String batp="&batInfo=";

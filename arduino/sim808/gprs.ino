@@ -74,6 +74,7 @@ boolean nettask(){
 
 boolean linkgprs(){
   debugPrint(F("gprs link "));
+  // CHECKME: this only works if at+cipstatus returns IP START
   return checkResp(F("at+ciicr"),60,10000,ok);
 }
 
