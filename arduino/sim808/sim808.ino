@@ -46,6 +46,7 @@
 
 // software serial to sim808
 SoftwareSerial sim808(10,8);
+//SoftwareSerial sim808(8,10);
 
 // sim808 controls
 #define RI 12    // status
@@ -84,13 +85,14 @@ double Tval[]={-40,0,50};
 // carrier data for GSM network
 //String PIN="8215";
 //String PIN="7312";
-String PIN="2147";
+//String PIN="2147";
+String PIN="1024";
 String APN="internet.ht.hr";
 //String APN="mobileinternet.tele2.hr";
 //String APN="web.htgprs";
 
 // server data
-String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=delta";
+String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=epsilon";
 String gpsdata="";
 String gpsp="&gpsInfo=";
 String batp="&batInfo=";
