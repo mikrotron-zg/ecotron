@@ -18,7 +18,9 @@ void setAlarmClock(){
   if(wu_hr[2])wu_hr[0]+=wu_hr[1];
   wu_min[0]%=60;
   wu_hr[0]%=24;
-  debugPrintln(String(wu_hr[0])+":"+String(wu_min[0]));
+  debugPrintln("Current time "+String(dtbuff.hour())+":"+String(dtbuff.minute()));
+  debugPrintln("Offset " + String(wu_hr[1])+":"+String(wu_min[1]));
+  debugPrintln("Wake up time "+String(wu_hr[0])+":"+String(wu_min[0]));
 }
 
 void debugRTC(){

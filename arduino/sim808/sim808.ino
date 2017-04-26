@@ -84,15 +84,15 @@ double Tval[]={-40,0,50};
 
 // carrier data for GSM network
 //String PIN="8215";
-//String PIN="7312";
+String PIN="7312";
 //String PIN="2147";
-String PIN="1024";
-String APN="internet.ht.hr";
+//String PIN="1024";
+//String APN="internet.ht.hr";
 //String APN="mobileinternet.tele2.hr";
-//String APN="web.htgprs";
+String APN="web.htgprs";
 
 // server data
-String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=epsilon";
+String SERVER="http://www.mikrotron.hr/ecotronserver/upload?stationId=beta";
 String gpsdata="";
 String gpsp="&gpsInfo=";
 String batp="&batInfo=";
@@ -135,6 +135,7 @@ void setup(){
 
 void loop(){
   // handle interrupt
+  debugPrintln("hflag = "+String(hflag));
   if(hflag&&!MANUAL){
     // turn stuff on
     ssOn();

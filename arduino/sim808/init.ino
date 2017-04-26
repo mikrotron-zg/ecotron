@@ -53,7 +53,7 @@ void sim808on(){
   digitalWrite(PWR,HIGH);
   delay(2050);
   digitalWrite(PWR,LOW);
-  while(!digitalRead(RI)){if(millis()-t>SIMTO){debugPrintln(F("sim timeout"));while(1);}}
+  while(!digitalRead(RI)){if(millis()-t>SIMTO){debugPrintln(F("sim ON timeout"));while(1);}}
   debugPrintln("ON");
 }
 
@@ -65,7 +65,7 @@ void sim808off(){
   digitalWrite(PWR,HIGH);
   delay(2050);
   digitalWrite(PWR,LOW);
-  while(digitalRead(RI)){if(millis()-t>SIMTO){debugPrintln(F("sim timeout"));while(1);}}
+  while(digitalRead(RI)){if(millis()-t>SIMTO){debugPrintln(F("sim OFF timeout"));while(1);}}
   debugPrintln("OFF");
 }
 
