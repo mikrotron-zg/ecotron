@@ -122,7 +122,7 @@ void setup(){
   // make sure RTC works if device isn't started in manual mode
   if(!checkRTC()&&!MANUAL){debugPrintln(F("RTC DOWN"));while(1);}else{standardRTCSetup();}
   // loop RTC check on demand
-  if(CHECKRTC){while(1)debugRTC();}
+  //if(CHECKRTC){while(1)debugRTC();}
   // open serial to sim808
   sim808.begin(9600);
   // power sensor shield up
@@ -136,7 +136,8 @@ void setup(){
 void loop(){
   // handle interrupt
   debugPrintln("hflag = "+String(hflag));
-  if(hflag&&!MANUAL){
+  //if(hflag&&!MANUAL){ //hflag=0 prevents everything from working - disabled for the time being
+  if(!MANUAL){
     // turn stuff on
     ssOn();
     sim808su();

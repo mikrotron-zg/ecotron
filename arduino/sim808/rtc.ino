@@ -23,19 +23,19 @@ void setAlarmClock(){
   debugPrintln("Wake up time "+String(wu_hr[0])+":"+String(wu_min[0]));
 }
 
-void debugRTC(){
-  // to be called during sleep cycle debugging - set custom wakeup interval here
-  dumpNow();
-  wu_hr[1]=0;
-  wu_min[1]=2;
-  wu_hr[2]=0;
-  wu_min[2]=1;
-  hibernate();
-}
+//void debugRTC(){
+//  // to be called during sleep cycle debugging - set custom wakeup interval here
+//  dumpNow();
+//  wu_hr[1]=0;
+//  wu_min[1]=2;
+//  wu_hr[2]=0;
+//  wu_min[2]=1;
+//  hibernate();
+//}
 
 void standardRTCSetup(){
   // to be called as sleep interval configuration during normal device operation
-  wu_hr[1]=2;
+  wu_hr[1]=11;
   wu_hr[2]=1;
   wu_min[1]=58;
   wu_min[2]=1;

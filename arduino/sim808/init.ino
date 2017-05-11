@@ -23,6 +23,8 @@ void hcshut(){
 
 void hcopen(){
   // make data pins misbehave again
+  Serial.println("Entered hcopen()");
+  Serial.println("hflag=" + String(hflag));
   int k=0; //||DEBUG;
   for(int i=k;i<5;i++){
     pinMode(triggerPins[i],OUTPUT);
