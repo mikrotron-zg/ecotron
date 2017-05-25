@@ -35,7 +35,7 @@ void setAlarmClock(){
 
 void standardRTCSetup(){
   // to be called as sleep interval configuration during normal device operation
-  wu_hr[1]=11;
+  wu_hr[1]=3;
   wu_hr[2]=1;
   wu_min[1]=58;
   wu_min[2]=1;

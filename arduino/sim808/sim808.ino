@@ -136,6 +136,8 @@ void setup(){
 void loop(){
   // handle interrupt
   debugPrintln("hflag = "+String(hflag));
+  dtbuff=rtc.now();
+  debugPrintln("Woke up on " + String(dtbuff.hour())+":"+String(dtbuff.minute()));
   //if(hflag&&!MANUAL){ //hflag=0 prevents everything from working - disabled for the time being
   if(!MANUAL){
     // turn stuff on
